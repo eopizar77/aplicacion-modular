@@ -1,0 +1,28 @@
+---
+import { secciones } from '../lib/site';
+const s = secciones.nosotros;
+---
+
+{
+  s && (
+    <section id="nosotros" class="seccion">
+      <div class="contenedor nosotros">
+        <div class="aparecer">
+          <p class="sobretitulo">Nuestra historia</p>
+          <h2 class="titulo-seccion">{s.titulo}</h2>
+          {s.texto.split(/\n+/).map((p: string) => <p class="texto-largo">{p}</p>)}
+        </div>
+        {s.datos?.length && (
+          <ul class="datos">
+            {s.datos.map((d: any) => (
+              <li class="dato tarjeta tilt aparecer">
+                <strong>{d.valor}</strong>
+                <span>{d.etiqueta}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
+  )
+}

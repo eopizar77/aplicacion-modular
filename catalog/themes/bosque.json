@@ -1,0 +1,24 @@
+{
+  "id": "bosque",
+  "nombre": "Bosque",
+  "descripcion": "Natural y elegante. Ideal para restaurantes de autor, vegetarianos, panaderías artesanales.",
+  "modo": "oscuro",
+  "colores": {
+    "primario": "#6A994E",
+    "secundario": "#A7C957",
+    "acento": "#F2E8CF",
+    "fondo": "#0F1A14",
+    "superficie": "#17261D",
+    "texto": "#F2E8CF",
+    "textoSuave": "#B5C4AE"
+  },
+  "tipografia": {
+    "titulos": "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif",
+    "cuerpo": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+  },
+  "radio": "12px",
+  "escena3d": {
+    "forma": "hojas",
+    "intensidad": 0.9
+  }
+}

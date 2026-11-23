@@ -1,0 +1,53 @@
+{
+  "slug": "demo-cevicheria",
+  "plantilla": "restaurante",
+  "tema": "oceano",
+  "personalizacion": {
+    "colores": { "primario": "#0B6E99" }
+  },
+  "negocio": {
+    "nombre": "Mar de Usaquén",
+    "eslogan": "Cevichería y cocina del Pacífico",
+    "descripcion": "Ceviches, encocados y arroces del Pacífico colombiano preparados con pesca responsable, en el corazón de Usaquén.",
+    "categoria": "Cevichería · Mariscos",
+    "ciudad": "Bogotá D.C.",
+    "direccion": "Carrera 6 # 119-00",
+    "barrio": "Usaquén",
+    "whatsapp": "573000000001",
+    "rangoPrecios": "$$$",
+    "horarios": [
+      { "dias": "Martes a domingo", "horas": "12:00 – 21:00" },
+      { "dias": "Lunes", "horas": "Cerrado" }
+    ],
+    "mapa": { "consulta": "Usaquén, Bogotá", "mostrarMapa": true }
+  },
+  "secciones": {
+    "nosotros": {
+      "titulo": "Del Pacífico a tu mesa",
+      "texto": "Trabajamos directamente con pescadores artesanales de Bahía Solano y Tumaco. Cocina honesta, fresca y con sabor a mar.",
+      "datos": [
+        { "valor": "48 h", "etiqueta": "del mar a tu plato" },
+        { "valor": "8", "etiqueta": "familias pescadoras aliadas" }
+      ]
+    },
+    "menu": {
+      "titulo": "Nuestra carta",
+      "categorias": [
+        {
+          "nombre": "Ceviches",
+          "items": [
+            { "nombre": "Ceviche clásico de corvina", "descripcion": "Leche de tigre, cebolla morada y ají.", "precio": 36000, "destacado": true },
+            { "nombre": "Ceviche de camarón tropical", "descripcion": "Mango, aguacate y maíz tostado.", "precio": 39000 }
+          ]
+        },
+        {
+          "nombre": "Fuertes",
+          "items": [
+            { "nombre": "Encocado de piangua", "descripcion": "Leche de coco, hierbas de azotea y arroz con coco.", "precio": 48000, "etiquetas": ["tradicional"] },
+            { "nombre": "Arroz marinero", "descripcion": "Camarón, calamar, piangua y pescado del día.", "precio": 52000 }
+          ]
+        }
+      ]
+    }
+  }
+}

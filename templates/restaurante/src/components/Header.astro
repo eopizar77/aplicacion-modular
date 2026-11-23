@@ -1,0 +1,37 @@
+---
+import { negocio, secciones, assetUrl, whatsappUrl, iniciales } from '../lib/site';
+const wa = whatsappUrl();
+const enlaces = [
+  secciones.nosotros && { href: '#nosotros', texto: 'Nosotros' },
+  secciones.menu && { href: '#carta', texto: 'Carta' },
+  secciones.galeria?.length && { href: '#galeria', texto: 'Galería' },
+  { href: '#visitanos', texto: 'Visítanos' },
+].filter(Boolean) as { href: string; texto: string }[];
+---
+
+<header class="cabecera">
+  <div class="contenedor cabecera__fila">
+    <a class="marca" href="/" aria-label={`${negocio.nombre}, inicio`}>
+      {
+        negocio.logo ? (
+          <img src={assetUrl(negocio.logo)} alt="" width="40" height="40" class="marca__logo" />
+        ) : (
+          <span class="marca__inicial" aria-hidden="true">{iniciales(negocio.nombre)}</span>
+        )
+      }
+      <span class="marca__nombre">{negocio.nombre}</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav">
+        {enlaces.map((e) => <li><a href={e.href}>{e.texto}</a></li>)}
+      </ul>
+    </nav>
+    {
+      wa && (
+        <a class="boton boton--pequeno" href={wa} target="_blank" rel="noopener noreferrer">
+          Reservar
+        </a>
+      )
+    }
+  </div>
+</header>

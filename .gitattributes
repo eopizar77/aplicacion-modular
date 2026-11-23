@@ -1,0 +1,9 @@
+# Forzar finales de línea LF (Unix) para compatibilidad total con contenedores Linux (Docker / Proxmox / Portainer)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.glb binary

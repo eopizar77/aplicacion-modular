@@ -1,0 +1,55 @@
+---
+import { secciones, precio, type Item } from '../lib/site';
+const m = secciones.menu;
+const anclaDe = (n: string) =>
+  'cat-' +
+  n
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-');
+---
+
+{
+  m && (
+    <section id="carta" class="seccion seccion--alterna">
+      <div class="contenedor">
+        <header class="cabeza-seccion aparecer">
+          <p class="sobretitulo">La carta</p>
+          <h2 class="titulo-seccion">{m.titulo}</h2>
+          {m.subtitulo && <p class="texto-suave">{m.subtitulo}</p>}
+        </header>
+
+        <nav class="categorias" aria-label="Categorías de la carta">
+          {m.categorias.map((cat: any) => (
+            <a href={`#${anclaDe(cat.nombre)}`}>{cat.nombre}</a>
+          ))}
+        </nav>
+
+        {m.categorias.map((cat: any) => (
+          <div class="categoria" id={anclaDe(cat.nombre)}>
+            <h3 class="categoria__titulo aparecer">{cat.nombre}</h3>
+            <ul class="platos">
+              {cat.items.map((it: Item) => (
+                <li class:list={['plato tarjeta tilt aparecer', { 'plato--destacado': it.destacado }]}>
+                  <div class="plato__cabeza">
+                    <h4>{it.nombre}</h4>
+                    <span class="plato__precio">{precio(it.precio)}</span>
+                  </div>
+                  {it.descripcion && <p>{it.descripcion}</p>}
+                  {(it.destacado || it.etiquetas?.length) && (
+                    <ul class="chips">
+                      {it.destacado && <li class="chip chip--destacado">★ Recomendado</li>}
+                      {it.etiquetas?.map((e) => <li class="chip">{e}</li>)}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <p class="nota-precios">Precios en pesos colombianos (COP), impuestos incluidos.</p>
+      </div>
+    </section>
+  )
+}

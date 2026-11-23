@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-sites/
+.forja/
+.astro/
+.env
+*.log
+.DS_Store
+Thumbs.db
+# Datos sensibles: NUNCA versionar bases de datos de empresas
+data/privado/
+*.csv
+*.xlsx

@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+dist-sites
+.forja
+**/.astro
+.git
+.env
+data/privado
+documentacion
+*.csv
+*.xlsx

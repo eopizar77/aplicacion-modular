@@ -1,0 +1,23 @@
+{
+  "name": "forja-modular",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Forja Modular: generador de sitios web y aplicaciones ensamblables por piezas (plantillas, temas, 3D, Docker).",
+  "type": "module",
+  "workspaces": [
+    "generator",
+    "templates/*"
+  ],
+  "scripts": {
+    "forja": "node generator/bin/forja.mjs",
+    "list": "node generator/bin/forja.mjs list",
+    "validate": "node generator/bin/forja.mjs validate --all",
+    "build:sites": "node generator/bin/forja.mjs build --all",
+    "dev:restaurante": "node generator/bin/forja.mjs dev demo-restaurante",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
+  },
+  "engines": {
+    "node": ">=20.10"
+  }
+}

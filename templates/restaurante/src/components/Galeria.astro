@@ -1,0 +1,24 @@
+---
+import { secciones, assetUrl } from '../lib/site';
+const g = secciones.galeria ?? [];
+---
+
+{
+  g.length > 0 && (
+    <section id="galeria" class="seccion">
+      <div class="contenedor">
+        <header class="cabeza-seccion aparecer">
+          <p class="sobretitulo">Galería</p>
+          <h2 class="titulo-seccion">Así se vive la experiencia</h2>
+        </header>
+        <ul class="galeria">
+          {g.map((img: any, i: number) => (
+            <li class="galeria__item aparecer">
+              <img src={assetUrl(img.src)} alt={img.alt} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

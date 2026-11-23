@@ -1,0 +1,29 @@
+---
+import { secciones } from '../lib/site';
+const t = secciones.testimonios ?? [];
+---
+
+{
+  t.length > 0 && (
+    <section class="seccion seccion--alterna" aria-labelledby="testimonios-titulo">
+      <div class="contenedor">
+        <header class="cabeza-seccion aparecer">
+          <p class="sobretitulo">Opiniones</p>
+          <h2 id="testimonios-titulo" class="titulo-seccion">Lo que dicen nuestros clientes</h2>
+        </header>
+        <ul class="testimonios">
+          {t.map((x: any) => (
+            <li class="testimonio tarjeta tilt aparecer">
+              <p class="estrellas" aria-label={`${x.estrellas} de 5 estrellas`}>
+                {'★'.repeat(x.estrellas)}
+                <span class="estrellas__vacias">{'★'.repeat(5 - x.estrellas)}</span>
+              </p>
+              <blockquote>“{x.texto}”</blockquote>
+              <p class="testimonio__autor">— {x.autor}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

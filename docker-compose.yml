@@ -1,0 +1,53 @@
+# Forja Modular — orquestación
+#   Local / LAN:            docker compose up -d --build
+#   Publicar por Internet:  docker compose --profile tunnel up -d --build   (requiere CLOUDFLARE_TUNNEL_TOKEN en .env)
+name: forja-modular
+
+services:
+  web:
+    build:
+      context: ${FORJA_BUILD_CONTEXT:-.}
+      args:
+        DOMINIO_BASE: ${DOMINIO_BASE:-homelab.lan}
+        ESQUEMA_URL: ${ESQUEMA_URL:-http}
+        WEB_PORT: ${WEB_PORT:-19085}
+        MOSTRAR_INDICE: ${MOSTRAR_INDICE:-true}
+    image: forja/sitios:0.1.0
+    container_name: forja-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-19085}:8080"
+    # Endurecimiento del contenedor (compatible con nginxinc/nginx-unprivileged en modo read_only)
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+      - /var/cache/nginx:rw,noexec,nosuid,size=32m
+      - /var/run:rw,noexec,nosuid,size=8m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: forja-tunnel
+    profiles: ["tunnel"]
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true

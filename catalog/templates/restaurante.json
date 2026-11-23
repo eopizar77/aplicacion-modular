@@ -1,0 +1,11 @@
+{
+  "id": "restaurante",
+  "nombre": "Restaurante 3D",
+  "version": "0.1.0",
+  "sector": "gastronomia",
+  "descripcion": "Landing de una página para restaurantes, cafés y bares: hero 3D animado, carta por categorías con tarjetas 3D, galería, testimonios, horarios, mapa y botón de WhatsApp. Incluye página de política de tratamiento de datos (Ley 1581 de 2012).",
+  "directorio": "templates/restaurante",
+  "secciones": ["hero3d", "nosotros", "menu", "galeria", "testimonios", "visita", "privacidad"],
+  "temasRecomendados": ["brasa", "oceano", "bosque"],
+  "ejemplo": "sites/demo-restaurante"
+}

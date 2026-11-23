@@ -1,0 +1,50 @@
+---
+import { negocio, secciones, tema, whatsappUrl } from '../lib/site';
+const wa = whatsappUrl();
+const colores = JSON.stringify({
+  primario: tema.colores.primario,
+  secundario: tema.colores.secundario,
+  acento: tema.colores.acento,
+  fondo: tema.colores.fondo,
+});
+const palabras = negocio.nombre.split(' ');
+---
+
+<section class="hero" aria-labelledby="hero-titulo">
+  <!-- Contenedor de la escena 3D: se monta de forma diferida y solo si el dispositivo lo soporta -->
+  <div
+    class="hero__escena"
+    data-hero3d
+    data-forma={tema.escena3d.forma}
+    data-intensidad={tema.escena3d.intensidad}
+    data-colores={colores}
+    data-modo={tema.modo}
+    aria-hidden="true"
+  >
+    <div class="hero__respaldo"></div>
+  </div>
+  <div class="hero__velo" aria-hidden="true"></div>
+
+  <div class="contenedor hero__contenido">
+    {negocio.categoria && <p class="hero__etiqueta">{negocio.categoria} · {negocio.barrio ?? negocio.ciudad}</p>}
+    <h1 id="hero-titulo" class="hero__titulo">
+      {palabras.map((p: string, i: number) => <span style={`--i:${i}`}>{p}</span>)}
+    </h1>
+    {negocio.eslogan && <p class="hero__eslogan">{negocio.eslogan}</p>}
+    <div class="hero__acciones">
+      {secciones.menu && <a class="boton" href="#carta">Ver la carta</a>}
+      {
+        wa && (
+          <a class="boton boton--fantasma" href={wa} target="_blank" rel="noopener noreferrer">
+            Escríbenos por WhatsApp
+          </a>
+        )
+      }
+    </div>
+  </div>
+  <a class="hero__bajar" href="#contenido" aria-label="Bajar al contenido"><span></span></a>
+</section>
+
+<script>
+  import '../scripts/hero3d-cargador';
+</script>

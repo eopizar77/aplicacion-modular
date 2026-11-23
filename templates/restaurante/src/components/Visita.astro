@@ -1,0 +1,53 @@
+---
+import { negocio, mapaUrls, whatsappUrl } from '../lib/site';
+const mapa = mapaUrls();
+const wa = whatsappUrl();
+const mostrarMapa = negocio.mapa?.mostrarMapa !== false;
+---
+
+<section id="visitanos" class="seccion">
+  <div class="contenedor visita">
+    <div class="aparecer">
+      <p class="sobretitulo">Visítanos</p>
+      <h2 class="titulo-seccion">Te esperamos</h2>
+      <address class="visita__direccion">
+        <strong>{negocio.direccion}</strong><br />
+        {negocio.barrio && <>{negocio.barrio}, </>}{negocio.ciudad}
+      </address>
+
+      {
+        negocio.horarios?.length && (
+          <dl class="horarios">
+            {negocio.horarios.map((h: any) => (
+              <div>
+                <dt>{h.dias}</dt>
+                <dd>{h.horas}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+
+      <div class="visita__acciones">
+        <a class="boton" href={mapa.google} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
+        <a class="boton boton--fantasma" href={mapa.waze} target="_blank" rel="noopener noreferrer">Abrir en Waze</a>
+        {negocio.telefono && <a class="boton boton--fantasma" href={`tel:${negocio.telefono.replace(/[^+0-9]/g, '')}`}>Llamar</a>}
+        {wa && <a class="boton boton--fantasma" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
+      </div>
+    </div>
+
+    {
+      mostrarMapa && (
+        <div class="visita__mapa tarjeta aparecer">
+          <iframe
+            src={mapa.embed}
+            title={`Mapa de ubicación de ${negocio.nombre}`}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+          />
+        </div>
+      )
+    }
+  </div>
+</section>

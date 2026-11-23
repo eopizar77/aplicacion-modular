@@ -1,0 +1,16 @@
+{
+  "name": "@forja/plantilla-restaurante",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Plantilla Astro + Three.js para restaurantes. Se alimenta de un manifiesto resuelto por el generador Forja (variable FORJA_SITE).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.13",
+    "three": "^0.187.0"
+  }
+}

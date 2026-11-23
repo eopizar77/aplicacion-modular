@@ -1,0 +1,75 @@
+---
+// Modelo de política de tratamiento de datos personales (Ley 1581 de 2012, Decreto 1377 de 2013).
+// IMPORTANTE: es una base orientativa; cada negocio debe revisarla con su asesor legal.
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, negocio } from '../lib/site';
+
+const responsable = site.legal?.responsable ?? negocio.nombre;
+const correo = site.legal?.emailDatos ?? negocio.email;
+const fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Bogota' });
+---
+
+<Layout titulo={`Política de tratamiento de datos | ${negocio.nombre}`} descripcion={`Política de tratamiento de datos personales de ${negocio.nombre}.`}>
+  <Header />
+  <main id="contenido" class="seccion legal">
+    <div class="contenedor contenedor--estrecho">
+      <h1 class="titulo-seccion">Política de tratamiento de datos personales</h1>
+      <p class="texto-suave">Última actualización: {fecha}</p>
+
+      <h2>1. Responsable del tratamiento</h2>
+      <p>
+        <strong>{responsable}</strong>{negocio.nit && <>, NIT {negocio.nit}</>}, con domicilio en {negocio.direccion}, {negocio.ciudad},
+        Colombia{correo && <>; correo de contacto: <a href={`mailto:${correo}`}>{correo}</a></>}{negocio.telefono && <>; teléfono: {negocio.telefono}</>}.
+      </p>
+
+      <h2>2. Marco legal</h2>
+      <p>
+        Esta política se expide en cumplimiento de la Ley Estatutaria 1581 de 2012, el Decreto 1377 de 2013 (compilado en el
+        Decreto Único 1074 de 2015) y demás normas que los modifiquen o complementen.
+      </p>
+
+      <h2>3. Datos que recolectamos</h2>
+      <p>
+        Este sitio web <strong>no usa formularios, cookies, ni herramientas de analítica o rastreo</strong>. Solo tratamos los datos
+        que tú nos compartes voluntariamente al contactarnos por WhatsApp, teléfono o correo electrónico (por ejemplo: nombre,
+        número de contacto y detalles de tu reserva o pedido).
+      </p>
+
+      <h2>4. Finalidades</h2>
+      <ul>
+        <li>Atender reservas, pedidos, preguntas, quejas y reclamos.</li>
+        <li>Confirmar o modificar reservas y pedidos.</li>
+        <li>Enviar información comercial únicamente si nos das tu autorización previa, expresa e informada.</li>
+      </ul>
+
+      <h2>5. Derechos del titular</h2>
+      <p>Como titular de los datos tienes derecho a:</p>
+      <ul>
+        <li>Conocer, actualizar y rectificar tus datos personales.</li>
+        <li>Solicitar prueba de la autorización otorgada.</li>
+        <li>Ser informado sobre el uso que se ha dado a tus datos.</li>
+        <li>Revocar la autorización y/o solicitar la supresión de tus datos.</li>
+        <li>Presentar quejas ante la Superintendencia de Industria y Comercio (SIC).</li>
+        <li>Acceder gratuitamente a tus datos personales.</li>
+      </ul>
+
+      <h2>6. Consultas y reclamos</h2>
+      <p>
+        Puedes ejercer tus derechos escribiendo a {correo ? <a href={`mailto:${correo}`}>{correo}</a> : 'nuestros canales de contacto'}.
+        Las consultas se atenderán en un máximo de diez (10) días hábiles y los reclamos en un máximo de quince (15) días hábiles,
+        según los artículos 14 y 15 de la Ley 1581 de 2012.
+      </p>
+
+      <h2>7. Seguridad</h2>
+      <p>Aplicamos medidas técnicas y administrativas razonables para proteger tus datos contra pérdida, uso o acceso no autorizado.</p>
+
+      <h2>8. Vigencia</h2>
+      <p>Esta política rige a partir de su publicación. Los datos se conservarán mientras sean necesarios para las finalidades descritas.</p>
+
+      <p><a class="boton" href="/">Volver al inicio</a></p>
+    </div>
+  </main>
+  <Footer />
+</Layout>

@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import { site, negocio, tema, assetUrl, mapaUrls } from '../lib/site';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  noindex?: boolean;
+}
+const { titulo, descripcion, noindex = false } = Astro.props;
+const c = tema.colores;
+
+const title = titulo ?? site.seo?.titulo ?? `${negocio.nombre}${negocio.eslogan ? ' | ' + negocio.eslogan : ''}`;
+const desc = descripcion ?? site.seo?.descripcion ?? negocio.descripcion;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const imagenSeo = site.seo?.imagen ?? site.secciones?.galeria?.[0]?.src ?? negocio.logo;
+const ogImage = imagenSeo ? new URL(assetUrl(imagenSeo), Astro.site).href : undefined;
+const favicon = negocio.logo ? assetUrl(negocio.logo) : '/favicon.svg';
+
+// Variables CSS desde design tokens (valores validados con lista blanca en el generador).
+const cssVars = `:root{
+  --c-primario:${c.primario};--c-secundario:${c.secundario};--c-acento:${c.acento};
+  --c-fondo:${c.fondo};--c-superficie:${c.superficie};--c-texto:${c.texto};--c-texto-suave:${c.textoSuave};
+  --f-titulos:${tema.tipografia.titulos};--f-cuerpo:${tema.tipografia.cuerpo};--radio:${tema.radio};
+  color-scheme:${tema.modo === 'oscuro' ? 'dark' : 'light'};
+}`;
+
+// Datos estructurados schema.org para Google (rich results).
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  name: negocio.nombre,
+  description: negocio.descripcion,
+  url: Astro.site?.href,
+  ...(ogImage && { image: ogImage }),
+  ...(negocio.telefono && { telephone: negocio.telefono }),
+  ...(negocio.categoria && { servesCuisine: negocio.categoria }),
+  ...(negocio.rangoPrecios && { priceRange: negocio.rangoPrecios }),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: negocio.direccion,
+    addressLocality: negocio.ciudad,
+    addressCountry: 'CO',
+  },
+  hasMap: mapaUrls().google,
+  sameAs: Object.values(negocio.redes ?? {}),
+};
+// Escapar "<" evita romper el bloque <script> si algún texto contiene "</script>".
+const jsonLdSeguro = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="es-CO" data-modo={tema.modo}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content={c.fondo} />
+    <meta name="generator" content="Forja Modular" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href={favicon} />
+    <style is:inline set:html={cssVars}></style>
+    <script type="application/ld+json" is:inline set:html={jsonLdSeguro}></script>
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <slot />
+  </body>
+</html>

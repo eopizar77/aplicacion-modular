@@ -1,0 +1,24 @@
+{
+  "id": "brasa",
+  "nombre": "Brasa",
+  "descripcion": "Oscuro y cálido. Ideal para asaderos, parrillas, hamburgueserías y bares.",
+  "modo": "oscuro",
+  "colores": {
+    "primario": "#E4572E",
+    "secundario": "#F3A712",
+    "acento": "#FFD166",
+    "fondo": "#120E0B",
+    "superficie": "#1E1814",
+    "texto": "#F7EFE6",
+    "textoSuave": "#C9B8A6"
+  },
+  "tipografia": {
+    "titulos": "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif",
+    "cuerpo": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+  },
+  "radio": "18px",
+  "escena3d": {
+    "forma": "organica",
+    "intensidad": 1
+  }
+}

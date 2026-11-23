@@ -1,0 +1,24 @@
+{
+  "id": "oceano",
+  "nombre": "Océano",
+  "descripcion": "Claro y fresco. Ideal para marisquerías, cafés, heladerías y comida saludable.",
+  "modo": "claro",
+  "colores": {
+    "primario": "#0E7C86",
+    "secundario": "#2A9D8F",
+    "acento": "#F4A261",
+    "fondo": "#F6FBFC",
+    "superficie": "#FFFFFF",
+    "texto": "#0B2530",
+    "textoSuave": "#4A6670"
+  },
+  "tipografia": {
+    "titulos": "'Avenir Next', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    "cuerpo": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+  },
+  "radio": "24px",
+  "escena3d": {
+    "forma": "burbujas",
+    "intensidad": 0.8
+  }
+}

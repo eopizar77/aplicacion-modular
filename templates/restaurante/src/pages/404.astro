@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { negocio } from '../lib/site';
+---
+
+<Layout titulo={`Página no encontrada | ${negocio.nombre}`} noindex>
+  <main id="contenido" class="seccion no-encontrado">
+    <div class="contenedor contenedor--estrecho">
+      <p class="sobretitulo">Error 404</p>
+      <h1 class="titulo-seccion">Este plato no está en la carta</h1>
+      <p class="texto-suave">La página que buscas no existe o fue movida.</p>
+      <p><a class="boton" href="/">Volver al inicio</a></p>
+    </div>
+  </main>
+</Layout>

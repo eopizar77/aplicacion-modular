@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Nosotros from '../components/Nosotros.astro';
+import Menu from '../components/Menu.astro';
+import Galeria from '../components/Galeria.astro';
+import Testimonios from '../components/Testimonios.astro';
+import Visita from '../components/Visita.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Header />
+  <Hero />
+  <main id="contenido">
+    <Nosotros />
+    <Menu />
+    <Galeria />
+    <Testimonios />
+    <Visita />
+  </main>
+  <Footer />
+  <script>
+    import '../scripts/tilt';
+  </script>
+</Layout>

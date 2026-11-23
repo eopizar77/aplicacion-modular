@@ -1,0 +1,13 @@
+{
+  "name": "@forja/generator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI de Forja Modular: valida manifiestos, resuelve temas y ensambla sitios a partir de plantillas.",
+  "bin": {
+    "forja": "./bin/forja.mjs"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}
