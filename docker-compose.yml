@@ -12,7 +12,6 @@ services:
         ESQUEMA_URL: ${ESQUEMA_URL:-http}
         WEB_PORT: ${WEB_PORT:-19085}
         MOSTRAR_INDICE: ${MOSTRAR_INDICE:-true}
-    image: forja/sitios:0.1.0
     container_name: forja-web
     restart: unless-stopped
     ports:
