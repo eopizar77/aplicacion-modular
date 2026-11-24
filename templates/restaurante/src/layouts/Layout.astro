@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { site, negocio, tema, assetUrl, mapaUrls } from '../lib/site';
+import { site, negocio, tema, assetUrl, baseUrl, mapaUrls } from '../lib/site';
 
 interface Props {
   titulo?: string;
@@ -15,7 +15,7 @@ const desc = descripcion ?? site.seo?.descripcion ?? negocio.descripcion;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const imagenSeo = site.seo?.imagen ?? site.secciones?.galeria?.[0]?.src ?? negocio.logo;
 const ogImage = imagenSeo ? new URL(assetUrl(imagenSeo), Astro.site).href : undefined;
-const favicon = negocio.logo ? assetUrl(negocio.logo) : '/favicon.svg';
+const favicon = negocio.logo ? assetUrl(negocio.logo) : baseUrl('favicon.svg');
 
 // Variables CSS desde design tokens (valores validados con lista blanca en el generador).
 const cssVars = `:root{

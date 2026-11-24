@@ -4,7 +4,7 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { site, negocio } from '../lib/site';
+import { site, negocio, baseUrl } from '../lib/site';
 
 const responsable = site.legal?.responsable ?? negocio.nombre;
 const correo = site.legal?.emailDatos ?? negocio.email;
@@ -68,7 +68,7 @@ const fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: '
       <h2>8. Vigencia</h2>
       <p>Esta política rige a partir de su publicación. Los datos se conservarán mientras sean necesarios para las finalidades descritas.</p>
 
-      <p><a class="boton" href="/">Volver al inicio</a></p>
+      <p><a class="boton" href={baseUrl('/')}>Volver al inicio</a></p>
     </div>
   </main>
   <Footer />

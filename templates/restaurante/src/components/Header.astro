@@ -1,5 +1,5 @@
 ---
-import { negocio, secciones, assetUrl, whatsappUrl, iniciales } from '../lib/site';
+import { negocio, secciones, assetUrl, baseUrl, whatsappUrl, iniciales } from '../lib/site';
 const wa = whatsappUrl();
 const enlaces = [
   secciones.nosotros && { href: '#nosotros', texto: 'Nosotros' },
@@ -11,7 +11,7 @@ const enlaces = [
 
 <header class="cabecera">
   <div class="contenedor cabecera__fila">
-    <a class="marca" href="/" aria-label={`${negocio.nombre}, inicio`}>
+    <a class="marca" href={baseUrl('/')} aria-label={`${negocio.nombre}, inicio`}>
       {
         negocio.logo ? (
           <img src={assetUrl(negocio.logo)} alt="" width="40" height="40" class="marca__logo" />

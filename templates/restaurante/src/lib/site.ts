@@ -29,8 +29,13 @@ const fmtCOP = new Intl.NumberFormat('es-CO', {
 });
 export const precio = (v: number) => fmtCOP.format(v);
 
-/** URL pública de un asset del cliente ("assets/logo.png" -> "/assets/logo.png"). */
-export const assetUrl = (p: string) => '/' + p.replace(/^\/+/, '');
+const basePrefix = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+
+/** URL pública relativa a la base del sitio ("/" -> "/demo-restaurante/"). */
+export const baseUrl = (p = '/') => `${basePrefix}/${p.replace(/^\/+/, '')}`;
+
+/** URL pública de un asset del cliente ("assets/logo.png" -> "/demo-restaurante/assets/logo.png"). */
+export const assetUrl = (p: string) => baseUrl(p);
 
 export function whatsappUrl(mensaje?: string) {
   if (!negocio.whatsapp) return null;

@@ -7,6 +7,7 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: process.env.FORJA_SITE_URL || 'http://localhost:4321',
+  base: process.env.FORJA_BASE_PATH || '/',
   outDir: process.env.FORJA_OUT || './dist',
   publicDir: process.env.FORJA_PUBLIC || './public',
   trailingSlash: 'ignore',

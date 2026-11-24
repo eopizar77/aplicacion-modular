@@ -220,9 +220,8 @@ export function urlSitio(slug) {
   const esLan = esLocal || dominio.endsWith('.lan') || dominio.endsWith('.local');
   const esquema = (process.env.ESQUEMA_URL || (esLan ? 'http' : 'https')).trim();
   if (esquema !== 'http' && esquema !== 'https') throw new ErrorForja(`ESQUEMA_URL inválido: ${esquema}`);
-  // Si pasa por Nginx Proxy Manager (puerto 80/443), el navegador no lleva puerto en la URL pública.
   const puerto = esLocal ? `:${process.env.WEB_PORT || 8080}` : '';
-  return `${esquema}://${slug}.${dominio}${puerto}`;
+  return `${esquema}://${dominio}${puerto}/${slug}`;
 }
 
 export async function construirSitio(slug) {
@@ -238,11 +237,12 @@ export async function construirSitio(slug) {
       FORJA_SITE: prep.rutaJson,
       FORJA_PUBLIC: prep.publico,
       FORJA_OUT: salida,
+      FORJA_BASE_PATH: `/${slug}`,
       FORJA_SITE_URL: urlSitio(slug),
       ASTRO_TELEMETRY_DISABLED: '1',
     },
   });
-  return { slug, salida, segundos: ((Date.now() - t0) / 1000).toFixed(1), url: urlSitio(slug), ...prep };
+  return { slug, salida, segundos: ((Date.now() - t0) / 1000).toFixed(1), url: `/${slug}/`, ...prep };
 }
 
 export async function desarrollarSitio(slug) {
@@ -267,7 +267,7 @@ export async function escribirIndice(resultados) {
   const filas = resultados
     .map(
       (r) =>
-        `<li><a href="${esc(r.url)}/">${esc(r.resuelto.negocio.nombre)}</a> <small>${esc(r.slug)} · ${esc(
+        `<li><a href="/${esc(r.slug)}/">${esc(r.resuelto.negocio.nombre)}</a> <small>${esc(r.slug)} · ${esc(
           r.resuelto.plantillaInfo.id,
         )} · tema ${esc(r.resuelto.tema.id)}</small></li>`,
     )

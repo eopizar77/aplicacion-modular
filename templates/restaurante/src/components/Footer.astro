@@ -1,5 +1,5 @@
 ---
-import { negocio, whatsappUrl } from '../lib/site';
+import { negocio, baseUrl, whatsappUrl } from '../lib/site';
 const redes = Object.entries(negocio.redes ?? {}) as [string, string][];
 const nombresRed: Record<string, string> = { instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok' };
 const wa = whatsappUrl();
@@ -27,7 +27,7 @@ const anio = new Date().getFullYear();
   </div>
   <div class="contenedor pie__legal">
     <p>© {anio} {negocio.nombre}{negocio.nit && <> · NIT {negocio.nit}</>}</p>
-    <p><a href="/privacidad/">Política de tratamiento de datos</a> · Este sitio no usa cookies ni rastreadores.</p>
+    <p><a href={baseUrl('privacidad/')}>Política de tratamiento de datos</a> · Este sitio no usa cookies ni rastreadores.</p>
   </div>
 </footer>
 
