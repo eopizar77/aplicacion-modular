@@ -1,0 +1,10 @@
+{
+  "name": "@forja/studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Forja Studio: interfaz web visual y API para crear, personalizar, previsualizar y ensamblar sitios de Forja Modular.",
+  "scripts": {
+    "start": "node src/server.mjs"
+  }
+}

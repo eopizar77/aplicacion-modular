@@ -137,6 +137,24 @@ export function resolverSitio(slug) {
 }
 
 // ---------------------------------------------------------------- assets
+export async function validarAssetBuffer(nombre, buffer) {
+  if (typeof nombre !== 'string' || !/^[a-zA-Z0-9._-]+\.(png|jpe?g|webp|avif|svg|gif)$/.test(nombre)) {
+    return 'nombre o extensión de archivo no permitidos (usa png, jpg, webp, avif, svg o gif)';
+  }
+  if (!Buffer.isBuffer(buffer) || buffer.length === 0) return 'archivo vacío';
+  if (buffer.length > MAX_ASSET_BYTES) {
+    return `supera 5 MB (${(buffer.length / 1048576).toFixed(1)} MB)`;
+  }
+  const ext = path.extname(nombre).toLowerCase();
+  if (ext === '.svg') {
+    const txt = buffer.toString('utf-8');
+    if (/<script|\son[a-z]+\s*=|javascript:|<foreignObject|<iframe/i.test(txt)) {
+      return 'SVG con contenido activo (script/eventos) — rechazado por seguridad';
+    }
+  }
+  return null;
+}
+
 async function validarAsset(abs) {
   const ext = path.extname(abs).toLowerCase();
   if (!EXT_PERMITIDAS.has(ext)) return `extensión no permitida (${ext})`;
@@ -317,3 +335,55 @@ export async function crearSitio(slug, { plantilla = 'restaurante', tema, nombre
   await fsp.writeFile(rutaJson, JSON.stringify(m, null, 2) + '\n', 'utf-8');
   return destino;
 }
+
+/** Valida y guarda de forma atómica el manifiesto site.json de un sitio existente. */
+export async function guardarSitio(slug, datos) {
+  asegurarSlug(slug);
+  const dir = path.join(RUTAS.sitios, slug);
+  if (!dentroDe(RUTAS.sitios, dir) || !fs.existsSync(dir)) {
+    throw new ErrorForja(`El sitio "${slug}" no existe`);
+  }
+  const r = sitioSchema.safeParse(datos);
+  if (!r.success) throw new ErrorForja(`Manifiesto inválido:\n${formatearErrores(r.error)}`);
+  if (r.data.slug !== slug) {
+    throw new ErrorForja(`El slug del manifiesto ("${r.data.slug}") no puede diferir de "${slug}"`);
+  }
+  cargarPlantilla(r.data.plantilla);
+  cargarTema(r.data.tema);
+  for (const ref of recolectarAssets(r.data)) {
+    const abs = path.join(dir, ref);
+    if (!dentroDe(dir, abs)) throw new ErrorForja(`Ruta fuera del sitio: ${ref}`);
+    if (!fs.existsSync(abs)) throw new ErrorForja(`Imagen referenciada no existe: sites/${slug}/${ref}`);
+  }
+  const rutaTmp = path.join(dir, 'site.json.tmp');
+  const rutaFinal = path.join(dir, 'site.json');
+  await fsp.writeFile(rutaTmp, JSON.stringify(r.data, null, 2) + '\n', 'utf-8');
+  await fsp.rename(rutaTmp, rutaFinal);
+  return r.data;
+}
+
+/** Lista los archivos disponibles en sites/<slug>/assets/. */
+export function listarAssetsSitio(slug) {
+  asegurarSlug(slug);
+  const dirAssets = path.join(RUTAS.sitios, slug, 'assets');
+  if (!fs.existsSync(dirAssets)) return [];
+  return fs
+    .readdirSync(dirAssets, { withFileTypes: true })
+    .filter((d) => d.isFile() && EXT_PERMITIDAS.has(path.extname(d.name).toLowerCase()))
+    .map((d) => `assets/${d.name}`)
+    .sort();
+}
+
+/** Valida y guarda un asset en sites/<slug>/assets/<nombre>. */
+export async function guardarAssetSitio(slug, nombre, buffer) {
+  asegurarSlug(slug);
+  const err = await validarAssetBuffer(nombre, buffer);
+  if (err) throw new ErrorForja(`Asset rechazado: ${err}`);
+  const dirAssets = path.join(RUTAS.sitios, slug, 'assets');
+  await fsp.mkdir(dirAssets, { recursive: true });
+  const destino = path.join(dirAssets, nombre);
+  if (!dentroDe(dirAssets, destino)) throw new ErrorForja('Nombre de archivo inválido');
+  await fsp.writeFile(destino, buffer);
+  return `assets/${nombre}`;
+}
+

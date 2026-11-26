@@ -7,6 +7,7 @@ services:
   web:
     build:
       context: ${FORJA_BUILD_CONTEXT:-.}
+      target: runtime
       args:
         DOMINIO_BASE: ${DOMINIO_BASE:-homelab.lan}
         ESQUEMA_URL: ${ESQUEMA_URL:-http}
@@ -16,6 +17,8 @@ services:
     restart: unless-stopped
     ports:
       - "${WEB_PORT:-19085}:8080"
+    volumes:
+      - forja_dist:/usr/share/nginx/html/sites:ro
     # Endurecimiento del contenedor (compatible con nginxinc/nginx-unprivileged en modo read_only)
     read_only: true
     tmpfs:
@@ -37,6 +40,44 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  studio:
+    build:
+      context: ${FORJA_BUILD_CONTEXT:-.}
+      target: studio
+      args:
+        DOMINIO_BASE: ${DOMINIO_BASE:-homelab.lan}
+        ESQUEMA_URL: ${ESQUEMA_URL:-http}
+        WEB_PORT: ${WEB_PORT:-19085}
+        MOSTRAR_INDICE: ${MOSTRAR_INDICE:-true}
+    container_name: forja-studio
+    restart: unless-stopped
+    ports:
+      - "${STUDIO_PORT:-19086}:4322"
+    environment:
+      - STUDIO_HOST=0.0.0.0
+      - STUDIO_PORT=4322
+      - STUDIO_TOKEN=${STUDIO_TOKEN:-}
+      - DOMINIO_BASE=${DOMINIO_BASE:-homelab.lan}
+      - ESQUEMA_URL=${ESQUEMA_URL:-http}
+      - MOSTRAR_INDICE=${MOSTRAR_INDICE:-true}
+    volumes:
+      - forja_sites:/app/sites
+      - forja_dist:/app/dist-sites
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 768M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: forja-tunnel
@@ -50,3 +91,8 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+
+volumes:
+  forja_sites:
+  forja_dist:
+

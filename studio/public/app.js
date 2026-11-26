@@ -1,0 +1,636 @@
+// Cliente web de Forja Studio.
+// Sincroniza el formulario con el manifiesto site.json, valida y dispara el ensamblaje de Astro + Three.js.
+
+const ETIQUETAS_COLOR = {
+  primario: 'Primario',
+  secundario: 'Secundario',
+  acento: 'Acento / Brillo',
+  fondo: 'Fondo general',
+  superficie: 'Superficie / Tarjetas',
+  texto: 'Texto principal',
+  textoSuave: 'Texto secundario',
+};
+
+const estado = {
+  catalogo: { plantillas: [], temas: [], sitios: [] },
+  slugActual: null,
+  manifiesto: null,
+  assets: [],
+};
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+function notificar(texto, tipo = '') {
+  const pill = $('#estado-pill');
+  pill.textContent = texto;
+  pill.className = `pill ${tipo ? 'pill--' + tipo : ''}`;
+}
+
+async function api(ruta, opciones = {}) {
+  const headers = {
+    'X-Forja-CSRF': '1',
+    ...(opciones.headers || {}),
+  };
+  if (opciones.body && typeof opciones.body === 'object' && !(opciones.body instanceof Blob)) {
+    headers['Content-Type'] = 'application/json';
+    opciones.body = JSON.stringify(opciones.body);
+  }
+  const res = await fetch(ruta, { ...opciones, headers });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) {
+    $('#modal-login').showModal();
+    throw new Error(data.error || 'Sesión requerida');
+  }
+  if (!res.ok) throw new Error(data.error || `Error HTTP ${res.status}`);
+  return data;
+}
+
+// ---------------------------------------------------------------- Inicialización
+async function iniciar() {
+  configurarEventosUI();
+  const sesion = await fetch('/api/session').then((r) => r.json());
+  if (sesion.requiereToken && !sesion.autenticado) {
+    $('#modal-login').showModal();
+    return;
+  }
+  await recargarCatalogo();
+}
+
+async function recargarCatalogo(slugPreferido) {
+  notificar('Cargando catálogo...');
+  estado.catalogo = await api('/api/catalog');
+
+  const selSitio = $('#select-sitio');
+  selSitio.innerHTML = '';
+  for (const s of estado.catalogo.sitios) {
+    const opt = document.createElement('option');
+    opt.value = s.slug;
+    opt.textContent = `${s.nombre} (${s.slug})`;
+    selSitio.appendChild(opt);
+  }
+
+  // Selectores de plantillas y temas en modal nuevo
+  const poblarSelect = (el, items) => {
+    el.innerHTML = '';
+    for (const it of items) {
+      const o = document.createElement('option');
+      o.value = it.id;
+      o.textContent = `${it.nombre} (${it.id})`;
+      el.appendChild(o);
+    }
+  };
+  poblarSelect($('#f-plantilla'), estado.catalogo.plantillas);
+  poblarSelect($('#nuevo-plantilla'), estado.catalogo.plantillas);
+  poblarSelect($('#nuevo-tema'), estado.catalogo.temas);
+
+  const objetivo = slugPreferido || estado.slugActual || estado.catalogo.sitios[0]?.slug;
+  if (objetivo) {
+    selSitio.value = objetivo;
+    await seleccionarSitio(objetivo);
+  }
+  notificar('Listo', 'ok');
+}
+
+async function seleccionarSitio(slug) {
+  notificar(`Cargando ${slug}...`);
+  const data = await api(`/api/sites/${encodeURIComponent(slug)}`);
+  estado.slugActual = data.slug;
+  estado.manifiesto = data.manifiesto;
+  estado.assets = data.assets || [];
+  renderizarFormulario();
+  actualizarIframe(data.previewUrl, data.compilado);
+  notificar(`Editando: ${slug}`, 'ok');
+}
+
+function actualizarIframe(previewUrl, compilado = true) {
+  $('#preview-url-texto').textContent = previewUrl;
+  $('#preview-abrir').href = previewUrl;
+  const iframe = $('#preview-iframe');
+  if (compilado) {
+    iframe.src = `${previewUrl}?t=${Date.now()}`;
+  } else {
+    iframe.srcdoc = `<body style="font-family:system-ui;background:#0d1117;color:#e6edf3;display:grid;place-items:center;height:90vh;text-align:center"><div><h2>Sitio aún no ensamblado</h2><p>Haz clic en <strong>⚡ Guardar y Ensamblar 3D</strong> arriba a la derecha para generar la vista previa.</p></div></body>`;
+  }
+}
+
+// ---------------------------------------------------------------- Renderizado del Formulario
+function renderizarFormulario() {
+  const m = estado.manifiesto;
+  if (!m) return;
+
+  $('#f-plantilla').value = m.plantilla;
+  $('#f-slug').value = m.slug;
+
+  renderizarTarjetasTemas();
+  renderizarPickersColores();
+  renderizarSelectLogo();
+
+  // Negocio
+  const n = m.negocio || {};
+  $('#f-nombre').value = n.nombre || '';
+  $('#f-categoria').value = n.categoria || '';
+  $('#f-eslogan').value = n.eslogan || '';
+  $('#f-descripcion').value = n.descripcion || '';
+  $('#f-ciudad').value = n.ciudad || '';
+  $('#f-barrio').value = n.barrio || '';
+  $('#f-direccion').value = n.direccion || '';
+  $('#f-whatsapp').value = n.whatsapp || '';
+  $('#f-telefono').value = n.telefono || '';
+  $('#f-email').value = n.email || '';
+  $('#f-rango').value = n.rangoPrecios || '';
+  $('#f-nit').value = n.nit || '';
+  $('#f-ig').value = n.redes?.instagram || '';
+  $('#f-fb').value = n.redes?.facebook || '';
+  $('#f-tt').value = n.redes?.tiktok || '';
+  $('#f-mapa-q').value = n.mapa?.consulta || '';
+  $('#f-mapa-mostrar').checked = n.mapa?.mostrarMapa !== false;
+
+  renderizarHorarios(n.horarios || []);
+
+  // Nosotros y Carta
+  const sec = m.secciones || {};
+  $('#f-nos-titulo').value = sec.nosotros?.titulo || '';
+  $('#f-nos-texto').value = sec.nosotros?.texto || '';
+  renderizarDatosNosotros(sec.nosotros?.datos || []);
+
+  $('#f-menu-titulo').value = sec.menu?.titulo || 'Nuestra carta';
+  $('#f-menu-sub').value = sec.menu?.subtitulo || '';
+  renderizarCategoriasMenu(sec.menu?.categorias || []);
+
+  // Testimonios, SEO y Legal
+  renderizarTestimonios(sec.testimonios || []);
+  $('#f-seo-titulo').value = m.seo?.titulo || '';
+  $('#f-seo-desc').value = m.seo?.descripcion || '';
+  $('#f-legal-resp').value = m.legal?.responsable || '';
+  $('#f-legal-email').value = m.legal?.emailDatos || '';
+}
+
+function renderizarTarjetasTemas() {
+  const cont = $('#tarjetas-temas');
+  cont.innerHTML = '';
+  const temaActual = estado.manifiesto.tema;
+
+  for (const t of estado.catalogo.temas) {
+    const card = document.createElement('div');
+    card.className = `tema-card ${t.id === temaActual ? 'tema-card--activo' : ''}`;
+    const puntos = [t.colores.primario, t.colores.secundario, t.colores.acento, t.colores.fondo]
+      .map((c) => `<span class="tema-card__punto" style="background:${c}"></span>`)
+      .join('');
+    card.innerHTML = `
+      <div class="tema-card__puntos">${puntos}</div>
+      <strong>${t.nombre}</strong>
+      <small>Modo ${t.modo} · 3D: ${t.escena3d.forma}</small>
+      <small>${t.descripcion}</small>
+    `;
+    card.addEventListener('click', () => {
+      estado.manifiesto.tema = t.id;
+      renderizarTarjetasTemas();
+      renderizarPickersColores();
+    });
+    cont.appendChild(card);
+  }
+}
+
+function renderizarPickersColores() {
+  const cont = $('#grid-colores');
+  cont.innerHTML = '';
+  const temaBase = estado.catalogo.temas.find((t) => t.id === estado.manifiesto.tema) || estado.catalogo.temas[0];
+  if (!temaBase) return;
+  const overrides = estado.manifiesto.personalizacion?.colores || {};
+
+  for (const [clave, etiqueta] of Object.entries(ETIQUETAS_COLOR)) {
+    const valorActual = overrides[clave] || temaBase.colores[clave];
+    const item = document.createElement('label');
+    item.className = 'color-item';
+    item.innerHTML = `
+      <input type="color" data-color-key="${clave}" value="${valorActual}" />
+      <div>
+        <strong>${etiqueta}</strong>
+        <code>${valorActual}</code>
+      </div>
+    `;
+    const input = item.querySelector('input');
+    const code = item.querySelector('code');
+    input.addEventListener('input', () => {
+      code.textContent = input.value.toUpperCase();
+      if (!estado.manifiesto.personalizacion) estado.manifiesto.personalizacion = { colores: {} };
+      if (!estado.manifiesto.personalizacion.colores) estado.manifiesto.personalizacion.colores = {};
+      estado.manifiesto.personalizacion.colores[clave] = input.value.toUpperCase();
+    });
+    cont.appendChild(item);
+  }
+}
+
+function renderizarSelectLogo() {
+  const sel = $('#f-logo');
+  sel.innerHTML = '<option value="">(Usar iniciales del negocio)</option>';
+  for (const a of estado.assets) {
+    const opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = a;
+    sel.appendChild(opt);
+  }
+  sel.value = estado.manifiesto.negocio?.logo || '';
+}
+
+function renderizarHorarios(horarios) {
+  const cont = $('#lista-horarios');
+  cont.innerHTML = '';
+  horarios.forEach((h) => agregarFilaHorario(h.dias, h.horas));
+}
+
+function agregarFilaHorario(dias = '', horas = '') {
+  const fila = document.createElement('div');
+  fila.className = 'fila-item fila-horario';
+  fila.innerHTML = `
+    <input type="text" class="h-dias" placeholder="Ej: Lunes a viernes" maxlength="40" />
+    <input type="text" class="h-horas" placeholder="Ej: 12:00 – 22:00" maxlength="40" />
+    <button type="button" class="btn btn--pequeno btn--peligro">✕</button>
+  `;
+  fila.querySelector('.h-dias').value = dias;
+  fila.querySelector('.h-horas').value = horas;
+  fila.querySelector('button').addEventListener('click', () => fila.remove());
+  $('#lista-horarios').appendChild(fila);
+}
+
+function renderizarDatosNosotros(datos) {
+  const cont = $('#lista-datos');
+  cont.innerHTML = '';
+  datos.forEach((d) => agregarFilaDato(d.valor, d.etiqueta));
+}
+
+function agregarFilaDato(valor = '', etiqueta = '') {
+  if ($$('.fila-dato').length >= 4) return;
+  const fila = document.createElement('div');
+  fila.className = 'fila-item fila-dato';
+  fila.innerHTML = `
+    <input type="text" class="d-valor" placeholder="Ej: 12+" maxlength="12" style="max-width:110px" />
+    <input type="text" class="d-etiqueta" placeholder="Ej: años asando en Chapinero" maxlength="40" />
+    <button type="button" class="btn btn--pequeno btn--peligro">✕</button>
+  `;
+  fila.querySelector('.d-valor').value = valor;
+  fila.querySelector('.d-etiqueta').value = etiqueta;
+  fila.querySelector('button').addEventListener('click', () => fila.remove());
+  $('#lista-datos').appendChild(fila);
+}
+
+function renderizarCategoriasMenu(categorias) {
+  const cont = $('#lista-categorias');
+  cont.innerHTML = '';
+  categorias.forEach((c) => agregarCajaCategoria(c.nombre, c.items));
+}
+
+function agregarCajaCategoria(nombre = 'Nueva categoría', items = [{ nombre: 'Plato ejemplo', precio: 20000 }]) {
+  const box = document.createElement('div');
+  box.className = 'cat-box';
+  box.innerHTML = `
+    <div class="cat-box__header">
+      <input type="text" class="cat-nombre" placeholder="Nombre de la categoría" maxlength="40" />
+      <button type="button" class="btn btn--pequeno btn-add-plato">+ Plato</button>
+      <button type="button" class="btn btn--pequeno btn--peligro btn-del-cat">Eliminar categoría</button>
+    </div>
+    <div class="cat-platos"></div>
+  `;
+  box.querySelector('.cat-nombre').value = nombre;
+  const contPlatos = box.querySelector('.cat-platos');
+  items.forEach((it) => agregarFilaPlato(contPlatos, it));
+  box.querySelector('.btn-add-plato').addEventListener('click', () =>
+    agregarFilaPlato(contPlatos, { nombre: '', precio: 0, descripcion: '' }),
+  );
+  box.querySelector('.btn-del-cat').addEventListener('click', () => box.remove());
+  $('#lista-categorias').appendChild(box);
+}
+
+function agregarFilaPlato(contenedor, it = {}) {
+  const row = document.createElement('div');
+  row.className = 'plato-row';
+  row.innerHTML = `
+    <input type="text" class="p-nombre" placeholder="Nombre del plato *" maxlength="80" />
+    <input type="number" class="p-precio" placeholder="Precio COP" min="0" step="500" />
+    <label style="display:flex;align-items:center;gap:4px;font-size:0.76rem">
+      <input type="checkbox" class="p-dest" /> ★ Destacado
+    </label>
+    <button type="button" class="btn btn--pequeno btn--peligro">✕</button>
+    <input type="text" class="p-desc plato-row__desc" placeholder="Descripción o ingredientes (opcional)" maxlength="240" />
+  `;
+  row.querySelector('.p-nombre').value = it.nombre || '';
+  row.querySelector('.p-precio').value = Number(it.precio ?? 0);
+  row.querySelector('.p-dest').checked = Boolean(it.destacado);
+  row.querySelector('.p-desc').value = it.descripcion || '';
+  row.querySelector('button').addEventListener('click', () => row.remove());
+  contenedor.appendChild(row);
+}
+
+function renderizarTestimonios(lista) {
+  const cont = $('#lista-testimonios');
+  cont.innerHTML = '';
+  lista.forEach((t) => agregarFilaTestimonio(t.autor, t.texto, t.estrellas));
+}
+
+function agregarFilaTestimonio(autor = '', texto = '', estrellas = 5) {
+  const fila = document.createElement('div');
+  fila.className = 'fila-item fila-testimonio';
+  fila.innerHTML = `
+    <input type="text" class="t-autor" placeholder="Cliente" maxlength="60" style="max-width:140px" />
+    <input type="text" class="t-texto" placeholder="Opinión del cliente" maxlength="400" />
+    <select class="t-estrellas" style="max-width:85px">
+      <option value="5">5 ★</option>
+      <option value="4">4 ★</option>
+      <option value="3">3 ★</option>
+    </select>
+    <button type="button" class="btn btn--pequeno btn--peligro">✕</button>
+  `;
+  fila.querySelector('.t-autor').value = autor;
+  fila.querySelector('.t-texto').value = texto;
+  fila.querySelector('.t-estrellas').value = String(estrellas || 5);
+  fila.querySelector('button').addEventListener('click', () => fila.remove());
+  $('#lista-testimonios').appendChild(fila);
+}
+
+// ---------------------------------------------------------------- Recolectar Formulario -> JSON válido
+function recolectarManifiesto() {
+  const m = structuredClone(estado.manifiesto);
+  m.plantilla = $('#f-plantilla').value;
+
+  const optStr = (sel) => {
+    const v = $(sel).value.trim();
+    return v ? v : undefined;
+  };
+
+  const redes = {};
+  if (optStr('#f-ig')) redes.instagram = optStr('#f-ig');
+  if (optStr('#f-fb')) redes.facebook = optStr('#f-fb');
+  if (optStr('#f-tt')) redes.tiktok = optStr('#f-tt');
+
+  const horarios = $$('.fila-horario')
+    .map((f) => ({
+      dias: f.querySelector('.h-dias').value.trim(),
+      horas: f.querySelector('.h-horas').value.trim(),
+    }))
+    .filter((h) => h.dias && h.horas);
+
+  m.negocio = {
+    nombre: $('#f-nombre').value.trim(),
+    ...(optStr('#f-eslogan') && { eslogan: optStr('#f-eslogan') }),
+    descripcion: $('#f-descripcion').value.trim(),
+    ...(optStr('#f-categoria') && { categoria: optStr('#f-categoria') }),
+    ...(optStr('#f-nit') && { nit: optStr('#f-nit') }),
+    ...(optStr('#f-logo') && { logo: optStr('#f-logo') }),
+    ciudad: $('#f-ciudad').value.trim(),
+    direccion: $('#f-direccion').value.trim(),
+    ...(optStr('#f-barrio') && { barrio: optStr('#f-barrio') }),
+    ...(optStr('#f-telefono') && { telefono: optStr('#f-telefono') }),
+    ...(optStr('#f-whatsapp') && { whatsapp: optStr('#f-whatsapp') }),
+    ...(optStr('#f-email') && { email: optStr('#f-email') }),
+    ...(optStr('#f-rango') && { rangoPrecios: optStr('#f-rango') }),
+    ...(Object.keys(redes).length && { redes }),
+    ...(horarios.length && { horarios }),
+    mapa: {
+      consulta: optStr('#f-mapa-q') || `${$('#f-direccion').value.trim()}, ${$('#f-ciudad').value.trim()}`,
+      mostrarMapa: $('#f-mapa-mostrar').checked,
+    },
+  };
+
+  // Secciones
+  const secciones = { ...(m.secciones || {}) };
+  const nosTitulo = optStr('#f-nos-titulo');
+  const nosTexto = optStr('#f-nos-texto');
+  const datos = $$('.fila-dato')
+    .map((f) => ({
+      valor: f.querySelector('.d-valor').value.trim(),
+      etiqueta: f.querySelector('.d-etiqueta').value.trim(),
+    }))
+    .filter((d) => d.valor && d.etiqueta);
+
+  if (nosTitulo && nosTexto) {
+    secciones.nosotros = {
+      titulo: nosTitulo,
+      texto: nosTexto,
+      ...(datos.length && { datos }),
+    };
+  } else {
+    delete secciones.nosotros;
+  }
+
+  const categorias = $$('.cat-box')
+    .map((box) => {
+      const nombre = box.querySelector('.cat-nombre').value.trim();
+      const items = Array.from(box.querySelectorAll('.plato-row'))
+        .map((r) => {
+          const pNombre = r.querySelector('.p-nombre').value.trim();
+          const pPrecio = Math.max(0, Math.round(Number(r.querySelector('.p-precio').value || 0)));
+          const pDesc = r.querySelector('.p-desc').value.trim();
+          const pDest = r.querySelector('.p-dest').checked;
+          return {
+            nombre: pNombre,
+            ...(pDesc && { descripcion: pDesc }),
+            precio: pPrecio,
+            ...(pDest && { destacado: true }),
+          };
+        })
+        .filter((it) => it.nombre);
+      return { nombre, items };
+    })
+    .filter((c) => c.nombre && c.items.length > 0);
+
+  if (categorias.length) {
+    secciones.menu = {
+      titulo: optStr('#f-menu-titulo') || 'Nuestra carta',
+      ...(optStr('#f-menu-sub') && { subtitulo: optStr('#f-menu-sub') }),
+      categorias,
+    };
+  }
+
+  const testimonios = $$('.fila-testimonio')
+    .map((f) => ({
+      autor: f.querySelector('.t-autor').value.trim(),
+      texto: f.querySelector('.t-texto').value.trim(),
+      estrellas: Number(f.querySelector('.t-estrellas').value || 5),
+    }))
+    .filter((t) => t.autor && t.texto);
+
+  if (testimonios.length) secciones.testimonios = testimonios;
+  else delete secciones.testimonios;
+
+  m.secciones = secciones;
+
+  // SEO y Legal
+  if (optStr('#f-seo-titulo') || optStr('#f-seo-desc')) {
+    m.seo = {
+      ...(optStr('#f-seo-titulo') && { titulo: optStr('#f-seo-titulo') }),
+      ...(optStr('#f-seo-desc') && { descripcion: optStr('#f-seo-desc') }),
+    };
+  } else delete m.seo;
+
+  if (optStr('#f-legal-resp') || optStr('#f-legal-email')) {
+    m.legal = {
+      ...(optStr('#f-legal-resp') && { responsable: optStr('#f-legal-resp') }),
+      ...(optStr('#f-legal-email') && { emailDatos: optStr('#f-legal-email') }),
+    };
+  } else delete m.legal;
+
+  return m;
+}
+
+// ---------------------------------------------------------------- Acciones y Eventos
+function configurarEventosUI() {
+  // Pestañas
+  $$('.tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      $$('.tab').forEach((b) => b.classList.remove('tab--activa'));
+      btn.classList.add('tab--activa');
+      const target = btn.dataset.tab;
+      $$('.tab-panel').forEach((p) => p.classList.toggle('oculto', p.dataset.panel !== target));
+    });
+  });
+
+  // Cambio de sitio
+  $('#select-sitio').addEventListener('change', (e) => seleccionarSitio(e.target.value));
+
+  // Restaurar colores del tema
+  $('#btn-reset-colores').addEventListener('click', () => {
+    if (estado.manifiesto) {
+      estado.manifiesto.personalizacion = { colores: {} };
+      renderizarPickersColores();
+      notificar('Colores restaurados al tema base');
+    }
+  });
+
+  // Botones de agregar filas
+  $('#btn-add-horario').addEventListener('click', () => agregarFilaHorario());
+  $('#btn-add-dato').addEventListener('click', () => agregarFilaDato());
+  $('#btn-add-categoria').addEventListener('click', () => agregarCajaCategoria());
+  $('#btn-add-testimonio').addEventListener('click', () => agregarFilaTestimonio());
+
+  // Subir asset
+  $('#btn-subir-asset').addEventListener('click', async () => {
+    const file = $('#input-asset').files?.[0];
+    if (!file || !estado.slugActual) {
+      notificar('Selecciona un archivo primero', 'err');
+      return;
+    }
+    try {
+      notificar(`Subiendo ${file.name}...`);
+      const nombreLimpio = file.name.toLowerCase().replace(/[^a-z0-9._-]/g, '-');
+      const r = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}/assets`, {
+        method: 'POST',
+        headers: { 'X-Asset-Filename': encodeURIComponent(nombreLimpio) },
+        body: file,
+      });
+      estado.assets = r.assets;
+      estado.manifiesto.negocio.logo = r.asset;
+      renderizarSelectLogo();
+      $('#input-asset').value = '';
+      notificar(`Imagen guardada: ${r.asset}`, 'ok');
+    } catch (e) {
+      notificar(e.message, 'err');
+    }
+  });
+
+  // Guardar JSON
+  $('#btn-guardar').addEventListener('click', async () => {
+    try {
+      notificar('Validando y guardando...');
+      const nuevo = recolectarManifiesto();
+      const r = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}`, {
+        method: 'PUT',
+        body: nuevo,
+      });
+      estado.manifiesto = r.manifiesto;
+      notificar('✔ Manifiesto validado y guardado', 'ok');
+    } catch (e) {
+      notificar(e.message, 'err');
+      alert(`Error de validación:\n${e.message}`);
+    }
+  });
+
+  // Guardar y ensamblar 3D
+  $('#btn-ensamblar').addEventListener('click', async () => {
+    const btn = $('#btn-ensamblar');
+    btn.disabled = true;
+    try {
+      notificar('1/2 Validando manifiesto...');
+      const nuevo = recolectarManifiesto();
+      const guardado = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}`, {
+        method: 'PUT',
+        body: nuevo,
+      });
+      estado.manifiesto = guardado.manifiesto;
+
+      notificar('2/2 Ensamblando sitio 3D con Astro...');
+      const b = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}/build`, {
+        method: 'POST',
+      });
+      actualizarIframe(b.previewUrl, true);
+      notificar(`✔ Ensamblado en ${b.segundos}s`, 'ok');
+    } catch (e) {
+      notificar('Error al ensamblar', 'err');
+      alert(e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Conmutador vista previa Escritorio / Celular
+  $$('[data-viewport]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      $$('[data-viewport]').forEach((b) => b.classList.remove('modo-activo'));
+      btn.classList.add('modo-activo');
+      $('#preview-contenedor').classList.toggle('preview__contenedor--mobile', btn.dataset.viewport === 'mobile');
+    });
+  });
+
+  // Modal Nuevo Negocio
+  $('#btn-nuevo-sitio').addEventListener('click', () => {
+    $('#nuevo-nombre').value = '';
+    $('#nuevo-slug').value = '';
+    $('#modal-nuevo').showModal();
+  });
+  $('#btn-cancelar-nuevo').addEventListener('click', () => $('#modal-nuevo').close());
+  $('#nuevo-nombre').addEventListener('input', (e) => {
+    const slugSugerido = e.target.value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48);
+    $('#nuevo-slug').value = slugSugerido;
+  });
+  $('#form-nuevo').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const slug = $('#nuevo-slug').value.trim();
+      const nombre = $('#nuevo-nombre').value.trim();
+      const plantilla = $('#nuevo-plantilla').value;
+      const tema = $('#nuevo-tema').value;
+      notificar(`Creando ${slug}...`);
+      await api('/api/sites', {
+        method: 'POST',
+        body: { slug, nombre, plantilla, tema },
+      });
+      $('#modal-nuevo').close();
+      await recargarCatalogo(slug);
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  // Modal Login
+  $('#form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      await api('/api/session', {
+        method: 'POST',
+        body: { token: $('#login-token').value },
+      });
+      $('#modal-login').close();
+      await recargarCatalogo();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+}
+
+iniciar();

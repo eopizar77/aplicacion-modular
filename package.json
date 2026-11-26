@@ -6,10 +6,12 @@
   "type": "module",
   "workspaces": [
     "generator",
+    "studio",
     "templates/*"
   ],
   "scripts": {
     "forja": "node generator/bin/forja.mjs",
+    "studio": "node studio/src/server.mjs",
     "list": "node generator/bin/forja.mjs list",
     "validate": "node generator/bin/forja.mjs validate --all",
     "build:sites": "node generator/bin/forja.mjs build --all",

@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Forja Studio · Ensamblador Visual de Sitios 3D</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Barra superior -->
+    <header class="topbar">
+      <div class="topbar__marca">
+        <span class="topbar__icono" aria-hidden="true">⚒️</span>
+        <div>
+          <strong>Forja Studio</strong>
+          <small>Ensamblador Modular v0.1.0</small>
+        </div>
+      </div>
+
+      <div class="topbar__selector">
+        <label for="select-sitio">Sitio activo:</label>
+        <select id="select-sitio" aria-label="Seleccionar sitio"></select>
+        <button type="button" id="btn-nuevo-sitio" class="btn btn--secundario">+ Nuevo negocio</button>
+      </div>
+
+      <div class="topbar__acciones">
+        <span id="estado-pill" class="pill">Listo</span>
+        <button type="button" id="btn-guardar" class="btn btn--secundario">Guardar JSON</button>
+        <button type="button" id="btn-ensamblar" class="btn btn--primario">⚡ Guardar y Ensamblar 3D</button>
+      </div>
+    </header>
+
+    <!-- Área principal dividida: Editor (izquierda) + Vista previa en vivo (derecha) -->
+    <div class="layout">
+      <section class="editor" aria-label="Configurador del sitio">
+        <nav class="tabs" role="tablist">
+          <button type="button" class="tab tab--activa" data-tab="diseno" role="tab">1. Tema, Colores y Logo</button>
+          <button type="button" class="tab" data-tab="negocio" role="tab">2. Negocio y Contacto</button>
+          <button type="button" class="tab" data-tab="carta" role="tab">3. Historia y Carta</button>
+          <button type="button" class="tab" data-tab="legal" role="tab">4. Opiniones, SEO y Ley 1581</button>
+        </nav>
+
+        <form id="form-sitio" class="panel-scroll" novalidate>
+          <!-- TAB 1: DISEÑO, TEMA, COLORES Y ASSETS -->
+          <div class="tab-panel" data-panel="diseno">
+            <h2>Plantilla y Tema Base (Design Tokens)</h2>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Plantilla sectorial</span>
+                <select id="f-plantilla"></select>
+              </label>
+              <label class="campo">
+                <span>Slug (ruta del sitio)</span>
+                <input type="text" id="f-slug" readonly />
+              </label>
+            </div>
+
+            <h3>Elige el Tema y Escena 3D</h3>
+            <div id="tarjetas-temas" class="temas-grid"></div>
+
+            <div class="cabecera-bloque">
+              <h3>Personalizar paleta de colores</h3>
+              <button type="button" id="btn-reset-colores" class="btn btn--pequeno">Restaurar colores del tema</button>
+            </div>
+            <p class="ayuda">Cada cambio recalcula sombras, brillos y colores de la escena 3D en Three.js.</p>
+            <div id="grid-colores" class="colores-grid"></div>
+
+            <h3>Logo e Imágenes del Sitio</h3>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Logo actual</span>
+                <select id="f-logo"></select>
+              </label>
+              <div class="campo">
+                <span>Subir nueva imagen o logo (PNG, JPG, WEBP, SVG limpio, máx. 5 MB)</span>
+                <div class="fila-upload">
+                  <input type="file" id="input-asset" accept=".png,.jpg,.jpeg,.webp,.avif,.svg,.gif" />
+                  <button type="button" id="btn-subir-asset" class="btn btn--secundario">Subir asset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: NEGOCIO Y CONTACTO -->
+          <div class="tab-panel oculto" data-panel="negocio">
+            <h2>Identidad del Negocio</h2>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Nombre comercial *</span>
+                <input type="text" id="f-nombre" maxlength="80" required />
+              </label>
+              <label class="campo">
+                <span>Categoría (ej. Asadero · Parrilla)</span>
+                <input type="text" id="f-categoria" maxlength="60" />
+              </label>
+            </div>
+
+            <label class="campo">
+              <span>Eslogan principal</span>
+              <input type="text" id="f-eslogan" maxlength="120" />
+            </label>
+
+            <label class="campo">
+              <span>Descripción corta (SEO y Schema.org) *</span>
+              <textarea id="f-descripcion" rows="2" maxlength="400" required></textarea>
+            </label>
+
+            <div class="grid-3">
+              <label class="campo">
+                <span>Ciudad *</span>
+                <input type="text" id="f-ciudad" maxlength="60" required />
+              </label>
+              <label class="campo">
+                <span>Barrio / Localidad</span>
+                <input type="text" id="f-barrio" maxlength="60" />
+              </label>
+              <label class="campo">
+                <span>Dirección *</span>
+                <input type="text" id="f-direccion" maxlength="140" required />
+              </label>
+            </div>
+
+            <div class="grid-4">
+              <label class="campo">
+                <span>WhatsApp (con 57, solo dígitos)</span>
+                <input type="text" id="f-whatsapp" placeholder="573001234567" maxlength="15" />
+              </label>
+              <label class="campo">
+                <span>Teléfono fijo/celular</span>
+                <input type="text" id="f-telefono" placeholder="+57 601 000 0000" maxlength="20" />
+              </label>
+              <label class="campo">
+                <span>Correo electrónico</span>
+                <input type="email" id="f-email" maxlength="120" />
+              </label>
+              <label class="campo">
+                <span>Rango de precios</span>
+                <select id="f-rango">
+                  <option value="">(Sin especificar)</option>
+                  <option value="$">$ Económico</option>
+                  <option value="$$">$$ Moderado</option>
+                  <option value="$$$">$$$ Especial</option>
+                  <option value="$$$$">$$$$ Gourmet</option>
+                </select>
+              </label>
+            </div>
+
+            <h3>Redes Sociales (https://) y Mapa</h3>
+            <div class="grid-3">
+              <label class="campo">
+                <span>Instagram URL</span>
+                <input type="url" id="f-ig" placeholder="https://www.instagram.com/..." />
+              </label>
+              <label class="campo">
+                <span>Facebook URL</span>
+                <input type="url" id="f-fb" placeholder="https://www.facebook.com/..." />
+              </label>
+              <label class="campo">
+                <span>TikTok URL</span>
+                <input type="url" id="f-tt" placeholder="https://www.tiktok.com/..." />
+              </label>
+            </div>
+
+            <div class="grid-2">
+              <label class="campo">
+                <span>Búsqueda en Google Maps / Waze</span>
+                <input type="text" id="f-mapa-q" maxlength="200" />
+              </label>
+              <label class="campo campo--check">
+                <input type="checkbox" id="f-mapa-mostrar" checked />
+                <span>Mostrar mapa interactivo en la página</span>
+              </label>
+            </div>
+
+            <div class="cabecera-bloque">
+              <h3>Horarios de atención</h3>
+              <button type="button" id="btn-add-horario" class="btn btn--pequeno">+ Agregar horario</button>
+            </div>
+            <div id="lista-horarios" class="lista-editable"></div>
+          </div>
+
+          <!-- TAB 3: NOSOTROS Y CARTA -->
+          <div class="tab-panel oculto" data-panel="carta">
+            <h2>Sección "Nuestra Historia"</h2>
+            <label class="campo">
+              <span>Título de la sección</span>
+              <input type="text" id="f-nos-titulo" maxlength="80" />
+            </label>
+            <label class="campo">
+              <span>Relato del negocio (separa párrafos con Enter)</span>
+              <textarea id="f-nos-texto" rows="3" maxlength="1200"></textarea>
+            </label>
+
+            <div class="cabecera-bloque">
+              <h3>Tarjetas de cifras clave (máx. 4)</h3>
+              <button type="button" id="btn-add-dato" class="btn btn--pequeno">+ Agregar cifra</button>
+            </div>
+            <div id="lista-datos" class="lista-editable"></div>
+
+            <hr class="divisor" />
+
+            <h2>La Carta (Menú con Tarjetas 3D)</h2>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Título de la carta</span>
+                <input type="text" id="f-menu-titulo" maxlength="80" />
+              </label>
+              <label class="campo">
+                <span>Subtítulo / nota</span>
+                <input type="text" id="f-menu-sub" maxlength="200" />
+              </label>
+            </div>
+
+            <div class="cabecera-bloque">
+              <h3>Categorías y Platos</h3>
+              <button type="button" id="btn-add-categoria" class="btn btn--secundario">+ Nueva categoría</button>
+            </div>
+            <div id="lista-categorias" class="categorias-editor"></div>
+          </div>
+
+          <!-- TAB 4: TESTIMONIOS, SEO Y LEY 1581 -->
+          <div class="tab-panel oculto" data-panel="legal">
+            <div class="cabecera-bloque">
+              <h2>Testimonios de Clientes</h2>
+              <button type="button" id="btn-add-testimonio" class="btn btn--pequeno">+ Agregar opinión</button>
+            </div>
+            <div id="lista-testimonios" class="lista-editable"></div>
+
+            <hr class="divisor" />
+
+            <h2>SEO (Google y WhatsApp)</h2>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Título SEO (máx. 70 caracteres)</span>
+                <input type="text" id="f-seo-titulo" maxlength="70" />
+              </label>
+              <label class="campo">
+                <span>Descripción SEO (máx. 160 caracteres)</span>
+                <input type="text" id="f-seo-desc" maxlength="160" />
+              </label>
+            </div>
+
+            <hr class="divisor" />
+
+            <h2>Cumplimiento Legal — Ley 1581 de 2012 (Habeas Data)</h2>
+            <div class="grid-3">
+              <label class="campo">
+                <span>Razón social / Responsable</span>
+                <input type="text" id="f-legal-resp" maxlength="120" />
+              </label>
+              <label class="campo">
+                <span>NIT</span>
+                <input type="text" id="f-nit" placeholder="901.234.567-8" maxlength="20" />
+              </label>
+              <label class="campo">
+                <span>Correo para solicitudes de datos</span>
+                <input type="email" id="f-legal-email" maxlength="120" />
+              </label>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel derecho: Vista previa interactiva -->
+      <section class="preview" aria-label="Vista previa del sitio">
+        <div class="preview__barra">
+          <div class="preview__modos">
+            <button type="button" class="btn btn--pequeno modo-activo" data-viewport="desktop">🖥️ Escritorio</button>
+            <button type="button" class="btn btn--pequeno" data-viewport="mobile">📱 Celular</button>
+          </div>
+          <code id="preview-url-texto" class="preview__url">/demo-restaurante/</code>
+          <a id="preview-abrir" href="/demo-restaurante/" target="_blank" rel="noopener noreferrer" class="btn btn--pequeno">
+            Abrir en pestaña ↗
+          </a>
+        </div>
+        <div class="preview__contenedor" id="preview-contenedor">
+          <iframe id="preview-iframe" title="Vista previa del sitio generado"></iframe>
+        </div>
+      </section>
+    </div>
+
+    <!-- Modal: Crear nuevo negocio -->
+    <dialog id="modal-nuevo" class="modal">
+      <form id="form-nuevo" method="dialog">
+        <h2>Crear nuevo sitio de negocio</h2>
+        <label class="campo">
+          <span>Nombre del negocio *</span>
+          <input type="text" id="nuevo-nombre" placeholder="Ej: Panadería La Espiga" maxlength="80" required />
+        </label>
+        <label class="campo">
+          <span>Identificador (slug, solo minúsculas y guiones) *</span>
+          <input type="text" id="nuevo-slug" placeholder="panaderia-la-espiga" pattern="^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$" required />
+        </label>
+        <div class="grid-2">
+          <label class="campo">
+            <span>Plantilla</span>
+            <select id="nuevo-plantilla"></select>
+          </label>
+          <label class="campo">
+            <span>Tema inicial</span>
+            <select id="nuevo-tema"></select>
+          </label>
+        </div>
+        <div class="modal__acciones">
+          <button type="button" id="btn-cancelar-nuevo" class="btn btn--secundario">Cancelar</button>
+          <button type="submit" class="btn btn--primario">Crear y abrir en Studio</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Modal: Autenticación STUDIO_TOKEN (solo aparece si el servidor tiene STUDIO_TOKEN activo) -->
+    <dialog id="modal-login" class="modal">
+      <form id="form-login" method="dialog">
+        <h2>🔒 Acceso a Forja Studio</h2>
+        <p class="ayuda">Este servidor está protegido con <code>STUDIO_TOKEN</code>.</p>
+        <label class="campo">
+          <span>Clave de administrador</span>
+          <input type="password" id="login-token" required />
+        </label>
+        <div class="modal__acciones">
+          <button type="submit" class="btn btn--primario">Entrar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

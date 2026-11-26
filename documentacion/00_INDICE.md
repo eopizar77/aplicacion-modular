@@ -23,6 +23,7 @@
 | 09 | [Protección de datos y base CCB](09_PROTECCION_DE_DATOS_CCB.md) | Ley 1581, Ley 2300, uso responsable de la base de empresas |
 | 10 | [Modelo de negocio](10_MODELO_DE_NEGOCIO.md) | Propuesta de valor, precios sugeridos, flujo comercial |
 | 11 | [Bitácora](11_BITACORA.md) | Registro con fecha y hora de cada actividad realizada |
+| 12 | [Forja Studio (Fase 3)](12_FORJA_STUDIO.md) | Constructor visual web, API REST, vista previa en vivo y publicación en Proxmox |
 
 ## Lectura recomendada
 

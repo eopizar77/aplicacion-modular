@@ -23,9 +23,18 @@
       "facebook": "https://www.facebook.com/"
     },
     "horarios": [
-      { "dias": "Lunes a jueves", "horas": "12:00 – 22:00" },
-      { "dias": "Viernes y sábado", "horas": "12:00 – 23:30" },
-      { "dias": "Domingos y festivos", "horas": "12:00 – 18:00" }
+      {
+        "dias": "Lunes a jueves",
+        "horas": "12:00 – 22:00"
+      },
+      {
+        "dias": "Viernes y sábado",
+        "horas": "12:00 – 23:30"
+      },
+      {
+        "dias": "Domingos y festivos",
+        "horas": "12:00 – 18:00"
+      }
     ],
     "mapa": {
       "consulta": "Calle 60 # 9-23, Chapinero, Bogotá",
@@ -37,10 +46,22 @@
       "titulo": "Fuego lento, recetas de familia",
       "texto": "Empezamos en 2012 con una parrilla, dos mesas y la receta de chimichurri de la abuela Rosa.\nHoy seguimos haciendo lo mismo: carnes seleccionadas, leña de verdad y tiempo. Mucho tiempo. Porque lo bueno no se apura.",
       "datos": [
-        { "valor": "12+", "etiqueta": "años asando en Chapinero" },
-        { "valor": "100%", "etiqueta": "leña, cero gas" },
-        { "valor": "4.8★", "etiqueta": "calificación promedio" },
-        { "valor": "21", "etiqueta": "días de maduración" }
+        {
+          "valor": "12+",
+          "etiqueta": "años asando en Chapinero"
+        },
+        {
+          "valor": "100%",
+          "etiqueta": "leña, cero gas"
+        },
+        {
+          "valor": "4.8★",
+          "etiqueta": "calificación promedio"
+        },
+        {
+          "valor": "21",
+          "etiqueta": "días de maduración"
+        }
       ]
     },
     "menu": {
@@ -50,42 +71,118 @@
         {
           "nombre": "Entradas",
           "items": [
-            { "nombre": "Chorizo santarrosano", "descripcion": "A la brasa, con arepa y limón.", "precio": 14000 },
-            { "nombre": "Chicharrón carnudo", "descripcion": "Crocante por fuera, jugoso por dentro, con guacamole.", "precio": 18000, "destacado": true },
-            { "nombre": "Empanadas de pipián", "descripcion": "Cuatro unidades con ají de maní.", "precio": 12000, "etiquetas": ["vegetariano"] }
+            {
+              "nombre": "Chorizo santarrosano",
+              "descripcion": "A la brasa, con arepa y limón.",
+              "precio": 14000
+            },
+            {
+              "nombre": "Chicharrón carnudo",
+              "descripcion": "Crocante por fuera, jugoso por dentro, con guacamole.",
+              "precio": 18000,
+              "destacado": true
+            },
+            {
+              "nombre": "Empanadas de pipián",
+              "descripcion": "Cuatro unidades con ají de maní.",
+              "precio": 12000,
+              "etiquetas": [
+                "vegetariano"
+              ]
+            }
           ]
         },
         {
           "nombre": "Parrilla",
           "items": [
-            { "nombre": "Punta de anca 400 g", "descripcion": "El clásico de la casa, madurada 21 días.", "precio": 52000, "destacado": true, "etiquetas": ["recomendado del chef"] },
-            { "nombre": "Baby beef 350 g", "descripcion": "Corte magro y tierno, término a tu gusto.", "precio": 48000 },
-            { "nombre": "Costillas BBQ", "descripcion": "Cocción lenta de 6 horas, salsa de panela y café.", "precio": 46000, "etiquetas": ["picante suave"] },
-            { "nombre": "Pechuga a la leña", "descripcion": "Marinada en hierbas y limón mandarino.", "precio": 34000 },
-            { "nombre": "Parrillada para dos", "descripcion": "Punta de anca, costilla, chorizo, morcilla y pollo.", "precio": 98000 }
+            {
+              "nombre": "Punta de anca 400 g",
+              "descripcion": "El clásico de la casa, madurada 21 días.",
+              "precio": 52000,
+              "destacado": true,
+              "etiquetas": [
+                "recomendado del chef"
+              ]
+            },
+            {
+              "nombre": "Baby beef 350 g",
+              "descripcion": "Corte magro y tierno, término a tu gusto.",
+              "precio": 48000
+            },
+            {
+              "nombre": "Costillas BBQ",
+              "descripcion": "Cocción lenta de 6 horas, salsa de panela y café.",
+              "precio": 46000,
+              "etiquetas": [
+                "picante suave"
+              ]
+            },
+            {
+              "nombre": "Pechuga a la leña",
+              "descripcion": "Marinada en hierbas y limón mandarino.",
+              "precio": 34000
+            },
+            {
+              "nombre": "Parrillada para dos",
+              "descripcion": "Punta de anca, costilla, chorizo, morcilla y pollo.",
+              "precio": 98000
+            }
           ]
         },
         {
           "nombre": "Bebidas",
           "items": [
-            { "nombre": "Limonada de coco", "descripcion": "La famosa. Pídela, no te vas a arrepentir.", "precio": 11000, "destacado": true },
-            { "nombre": "Jugo natural en agua o leche", "descripcion": "Mora, lulo, maracuyá o guanábana.", "precio": 8000 },
-            { "nombre": "Cerveza artesanal local", "descripcion": "Pregunta por la de temporada.", "precio": 13000 }
+            {
+              "nombre": "Limonada de coco",
+              "descripcion": "La famosa. Pídela, no te vas a arrepentir.",
+              "precio": 11000,
+              "destacado": true
+            },
+            {
+              "nombre": "Jugo natural en agua o leche",
+              "descripcion": "Mora, lulo, maracuyá o guanábana.",
+              "precio": 8000
+            },
+            {
+              "nombre": "Cerveza artesanal local",
+              "descripcion": "Pregunta por la de temporada.",
+              "precio": 13000
+            }
           ]
         },
         {
           "nombre": "Postres",
           "items": [
-            { "nombre": "Brevas con arequipe", "descripcion": "Con queso campesino.", "precio": 10000 },
-            { "nombre": "Volcán de chocolate", "descripcion": "Con helado de vainilla.", "precio": 14000 }
+            {
+              "nombre": "Brevas con arequipe",
+              "descripcion": "Con queso campesino.",
+              "precio": 10000
+            },
+            {
+              "nombre": "Volcán de chocolate",
+              "descripcion": "Con helado de vainilla.",
+              "precio": 14000
+            }
           ]
         }
       ]
     },
     "testimonios": [
-      { "autor": "Carolina M.", "texto": "La punta de anca está en otro nivel. El servicio súper amable y la limonada de coco, adictiva.", "estrellas": 5 },
-      { "autor": "Andrés R.", "texto": "Fuimos en familia un domingo y todos salimos felices. Porciones generosas y precio justo.", "estrellas": 5 },
-      { "autor": "Luisa F.", "texto": "Las costillas BBQ se deshacen. Volvería solo por eso.", "estrellas": 4 }
+      {
+        "autor": "Carolina M.",
+        "texto": "La punta de anca está en otro nivel. El servicio súper amable y la limonada de coco, adictiva.",
+        "estrellas": 5
+      },
+      {
+        "autor": "Andrés R.",
+        "texto": "Fuimos en familia un domingo y todos salimos felices. Porciones generosas y precio justo.",
+        "estrellas": 5
+      },
+      {
+        "autor": "Luisa F.",
+        "texto": "Las costillas BBQ se deshacen. Volvería solo por eso.",
+        "estrellas": 4
+      }
     ]
   },
   "seo": {

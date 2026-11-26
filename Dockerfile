@@ -26,6 +26,19 @@ RUN node generator/bin/forja.mjs validate --all \
  && node generator/bin/forja.mjs build --all
 
 # ----------------------------------------------------------------------------
+# Target: studio (Panel visual Forja Studio — Fase 3, ejecuta como usuario no-root "node")
+FROM build AS studio
+ENV STUDIO_HOST=0.0.0.0 \
+    STUDIO_PORT=4322
+RUN chown -R node:node /app
+USER node
+EXPOSE 4322
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:4322/healthz || exit 1
+CMD ["node", "studio/src/server.mjs"]
+
+# ----------------------------------------------------------------------------
+# Target por defecto: runtime (Servidor Nginx multi-sitio sin privilegios)
 FROM nginxinc/nginx-unprivileged:1.29-alpine AS runtime
 LABEL org.opencontainers.image.title="forja-sitios" \
       org.opencontainers.image.description="Sitios web generados por Forja Modular" \

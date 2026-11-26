@@ -81,3 +81,33 @@ Registro auditable con fecha y hora (`America/Bogota`, UTC-5) de todas las decis
   - [Dockerfile](file:///d:/piza77/proyectos/APLICACION__MODULAR/Dockerfile), [docker-compose.yml](file:///d:/piza77/proyectos/APLICACION__MODULAR/docker-compose.yml) y [.env.example](file:///d:/piza77/proyectos/APLICACION__MODULAR/.env.example): Configuración por defecto en puerto libre `19085`, `DOMINIO_BASE=homelab.lan`, `FORJA_BUILD_CONTEXT` para Portainer y volúmenes `tmpfs` (`/tmp`, `/var/cache/nginx`, `/var/run`) requeridos por `nginx-unprivileged` con `read_only: true`.
   - [documentacion/07_DESPLIEGUE_PROXMOX.md](file:///d:/piza77/proyectos/APLICACION__MODULAR/documentacion/07_DESPLIEGUE_PROXMOX.md): Guía específica paso a paso para Portainer, Nginx Proxy Manager (`192.168.20.52:19085`) y AdGuard Home (`*.homelab.lan`).
 
+### `[2026-11-23 19:18:19 - 19:42:16 -05:00]` · Puesta en Producción Exitosa en Proxmox / Portainer y Cierre del Día 1
+- **Verificación en servidor (`192.168.20.52:19085`):** Stack `forja-modular` desplegado en Portainer desde el repositorio GitHub `eopizar77/aplicacion-modular`.
+- **Mejora de enrutamiento (`19:31 - 19:36`):**
+  - Se habilitó enrutamiento directo por ruta `/<slug>/` (`FORJA_BASE_PATH=/<slug>` en Astro y servidor principal en [deploy/nginx/default.conf](file:///d:/piza77/proyectos/APLICACION__MODULAR/deploy/nginx/default.conf)) para que todos los sitios (`/` índice, `/demo-restaurante/`, `/demo-cevicheria/`) abran sin requerir la creación manual de nuevos subdominios DNS en AdGuard Home.
+  - Se eliminó la directiva `image:` junto a `build:` en [docker-compose.yml](file:///d:/piza77/proyectos/APLICACION__MODULAR/docker-compose.yml) para evitar que Portainer intente hacer `docker pull` contra Docker Hub al actualizar el stack.
+  - Se añadió [.gitattributes](file:///d:/piza77/proyectos/APLICACION__MODULAR/.gitattributes) (`* text=auto eol=lf`) garantizando finales de línea Unix en todo el repositorio.
+- **Estado al cierre del Día 1:** **Fase 0, Fase 1 y Fase 1.1 (Despliegue en Proxmox/Portainer) 100 % operativas y verificadas por el usuario.**
+
+---
+
+## Sesión 2 — Jueves 26 de Noviembre de 2026 (`2026-11-26`)
+
+### `[2026-11-26 16:36:11 - 16:51:00 -05:00]` · Construcción de Fase 3: Forja Studio (Constructor Visual Web)
+- **Solicitud del usuario:** Avanzar con la **Fase 3 (Forja Studio)** manteniendo las reglas de gobernanza ("Prevención de las 4 D" y Ciberseguridad por Diseño), previo a revisar nuevas instrucciones estratégicas.
+- **Entrega 3.1 — Extensión del Generador y Backend API (`16:38 - 16:39`):**
+  - [generator/src/generate.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/generator/src/generate.mjs): Nuevas funciones `validarAssetBuffer`, `guardarSitio` (escritura atómica con `.tmp` + validación Zod estricta), `listarAssetsSitio` y `guardarAssetSitio`.
+  - [studio/package.json](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/package.json) y [studio/src/server.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/src/server.mjs): Servidor HTTP nativo (`node:http`) sin dependencias adicionales, autenticación `STUDIO_TOKEN` con `crypto.timingSafeEqual`, protección CSRF (`X-Forja-CSRF: 1`), bloqueo de concurrencia en builds y endpoints `/api/catalog`, `/api/sites`, `/api/sites/:slug`, `/api/sites/:slug/build`, `/api/sites/:slug/assets`.
+- **Entrega 3.2 — Interfaz Web Visual (`16:40 - 16:42`):**
+  - [studio/public/index.html](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/index.html), [studio/public/styles.css](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/styles.css) y [studio/public/app.js](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/app.js): Editor guiado en 4 pestañas (1. Tema, Colores y Logo; 2. Negocio y Contacto; 3. Historia y Carta 3D; 4. Opiniones, SEO y Ley 1581), modal de creación de nuevos sitios y panel de vista previa en vivo (`iframe`) con modos Escritorio y Celular.
+- **Pruebas automatizadas ejecutadas (`16:48`):**
+  - `GET /api/catalog` → `200 OK` (3 temas, 2 sitios).
+  - `GET /api/sites/demo-restaurante` → `200 OK`.
+  - Prueba anti-CSRF (`PUT` sin `X-Forja-CSRF: 1`) → bloqueado con `403 Forbidden`.
+  - Prueba de guardado atómico (`PUT` con cabecera CSRF y manifiesto válido) → `200 OK`.
+- **Entrega 3.3 — Integración Docker/Portainer y Documentación (`16:49 - 16:51`):**
+  - [Dockerfile](file:///d:/piza77/proyectos/APLICACION__MODULAR/Dockerfile) y [docker-compose.yml](file:///d:/piza77/proyectos/APLICACION__MODULAR/docker-compose.yml): Nuevo stage y servicio `forja-studio` (puerto `19086`, usuario no-root `node`) compartiendo el volumen `forja_dist` con `forja-web` (`19085`).
+  - Documentación completa en [documentacion/12_FORJA_STUDIO.md](file:///d:/piza77/proyectos/APLICACION__MODULAR/documentacion/12_FORJA_STUDIO.md).
+
+
+
