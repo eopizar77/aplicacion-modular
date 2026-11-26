@@ -27,6 +27,8 @@ import {
   traducirDireccionCine,
   aprobarBorradorYDisparar1080p,
 } from './orchestrator.mjs';
+import { auditarSitioWeb } from './auditor.mjs';
+import { sincronizarCatalogoQdrant } from './qdrant.mjs';
 
 const DIR_STUDIO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIR_PUBLIC = path.join(DIR_STUDIO, 'public');
@@ -399,6 +401,41 @@ async function manejarApi(req, res, url) {
         manifiesto: guardado,
       });
     }
+  }
+
+  // POST /api/qdrant/sync -> indexa plantillas, temas y blueprints MIT/CC0 en Qdrant (:6333)
+  if (ruta === '/api/qdrant/sync' && metodo === 'POST') {
+    const r = await sincronizarCatalogoQdrant();
+    return responderJson(res, 200, { ok: true, ...r });
+  }
+
+  // POST /api/audit-url -> ejecuta la auditoría de 4 Pilares sobre cualquier URL externa
+  if (ruta === '/api/audit-url' && metodo === 'POST') {
+    const body = await leerCuerpoJson(req);
+    const reporte = await auditarSitioWeb(body.url, {
+      contextoCompetencia: body.contextoCompetencia,
+    });
+    return responderJson(res, 200, { ok: true, reporte });
+  }
+
+  // POST /api/audit-to-site -> crea un nuevo sitio limpio en Forja Modular a partir de una auditoría
+  if (ruta === '/api/audit-to-site' && metodo === 'POST') {
+    const body = await leerCuerpoJson(req);
+    const manifiestoPropuesto = body.manifiesto;
+    if (!manifiestoPropuesto?.slug) throw new ErrorForja('Falta manifiesto base para crear el sitio');
+    const slug = String(manifiestoPropuesto.slug).trim().toLowerCase();
+    await crearSitio(slug, {
+      plantilla: manifiestoPropuesto.plantilla || 'restaurante',
+      tema: manifiestoPropuesto.tema || 'ejecutivo',
+      nombre: manifiestoPropuesto.negocio?.nombre,
+    });
+    // Usamos únicamente los datos extraídos del negocio auditado (sin arrastrar datos del ejemplo gastronómico)
+    const limpio = {
+      ...manifiestoPropuesto,
+      slug,
+    };
+    const guardado = await guardarSitio(slug, limpio);
+    return responderJson(res, 201, { ok: true, slug, manifiesto: guardado });
   }
 
   return responderJson(res, 404, { error: `Ruta API no encontrada: ${metodo} ${ruta}` });

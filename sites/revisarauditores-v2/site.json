@@ -1,0 +1,76 @@
+{
+  "slug": "revisarauditores-v2",
+  "plantilla": "restaurante",
+  "tema": "ejecutivo",
+  "negocio": {
+    "nombre": "Revisar Auditores LTDA",
+    "eslogan": "Revisoría Fiscal, Auditoría Externa y Consultoría Tributaria en Colombia",
+    "descripcion": "Firma colombiana de contadores públicos y especialistas en Revisoría Fiscal, Auditorías Especializadas y Consultoría Jurídica y Tributaria con presencia en Ibagué, Medellín, Villavicencio y Bogotá.",
+    "categoria": "Revisoría Fiscal · Auditoría · Consultoría",
+    "ciudad": "Colombia (Ibagué · Medellín · Villavicencio · Bogotá)",
+    "direccion": "Sedes corporativas en Ibagué, Medellín y Villavicencio",
+    "horarios": [
+      { "dias": "Lunes a viernes", "horas": "08:00 – 18:00" },
+      { "dias": "Sábados", "horas": "Cita previa" }
+    ],
+    "mapa": {
+      "consulta": "Revisar Auditores LTDA, Colombia",
+      "mostrarMapa": true
+    }
+  },
+  "secciones": {
+    "nosotros": {
+      "titulo": "Rigor técnico, transparencia y respaldo normativo",
+      "texto": "Acompañamos a organizaciones del sector real, solidario (Supersolidaria) y societario (Supersociedades) en el aseguramiento de su información financiera, cumplimiento tributario ante la DIAN y fortalecimiento del control interno.\nEsta propuesta generada en Forja Modular corrige los hallazgos críticos detectados en la auditoría web: incorpora jerarquía H1–H3 semántica, elimina el sobrepeso de 20 scripts de Divi/jQuery y reduce el HTML inicial a una séptima parte.",
+      "datos": [
+        { "valor": "4+", "etiqueta": "ciudades de cobertura" },
+        { "valor": "100%", "etiqueta": "estándares NIA / NIIF" },
+        { "valor": "< 0.4s", "etiqueta": "carga estática Forja" },
+        { "valor": "Ley 1581", "etiqueta": "privacidad sin rastreadores" }
+      ]
+    },
+    "menu": {
+      "titulo": "Portafolio de Servicios Profesionales",
+      "subtitulo": "Líneas de aseguramiento y consultoría extraídas y estructuradas desde su sitio actual.",
+      "categorias": [
+        {
+          "nombre": "Aseguramiento y Control",
+          "items": [
+            {
+              "nombre": "Revisoría Fiscal",
+              "descripcion": "Dictamen integral de estados financieros, evaluación permanente de control interno y cumplimiento legal ante Superintendencias y DIAN.",
+              "precio": 0,
+              "destacado": true,
+              "etiquetas": ["Sector Real", "Sector Solidario"]
+            },
+            {
+              "nombre": "Auditorías Especializadas",
+              "descripcion": "Auditoría financiera bajo NIA, auditoría interna, auditoría forense, gestión de riesgos (SARLAFT/SAGRILAFT) y debida diligencia.",
+              "precio": 0,
+              "etiquetas": ["NIA / NIIF"]
+            }
+          ]
+        },
+        {
+          "nombre": "Consultoría Corporativa",
+          "items": [
+            {
+              "nombre": "Consultoría y Asesoría Jurídica y Tributaria",
+              "descripcion": "Planeación tributaria estratégica, atención de requerimientos DIAN/SHD, derecho societario y laboral empresarial.",
+              "precio": 0,
+              "destacado": true,
+              "etiquetas": ["DIAN", "Societario"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "seo": {
+    "titulo": "Revisar Auditores LTDA | Revisoría Fiscal y Auditoría en Colombia",
+    "descripcion": "Firma de Revisoría Fiscal, Auditorías Especializadas y Consultoría Jurídica y Tributaria en Ibagué, Medellín, Villavicencio y Bogotá. Solicite cotización."
+  },
+  "legal": {
+    "responsable": "Revisar Auditores LTDA"
+  }
+}

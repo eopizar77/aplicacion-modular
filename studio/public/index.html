@@ -39,7 +39,8 @@
           <button type="button" class="tab" data-tab="negocio" role="tab">2. Negocio y Contacto</button>
           <button type="button" class="tab" data-tab="carta" role="tab">3. Historia y Carta</button>
           <button type="button" class="tab" data-tab="legal" role="tab">4. Opiniones, SEO y Ley 1581</button>
-          <button type="button" class="tab" data-tab="audiovisual" role="tab">5. 🎬 Estudio IA (5 Niveles)</button>
+          <button type="button" class="tab" data-tab="audiovisual" role="tab">5. 🎬 Estudio IA</button>
+          <button type="button" class="tab" data-tab="auditor" role="tab">6. 🔍 Auditor URL &amp; CRO</button>
         </nav>
 
         <form id="form-sitio" class="panel-scroll" novalidate>
@@ -366,6 +367,45 @@
               <span>Diseño sonoro sugerido (SFX + Música)</span>
               <input type="text" id="f-av-sfx" maxlength="240" />
             </label>
+          </div>
+
+          <!-- TAB 6: AUDITOR WEB INTEGRAL, ESTRATEGIA Y CRO (4 PILARES) + QDRANT -->
+          <div class="tab-panel oculto" data-panel="auditor">
+            <div class="cabecera-bloque">
+              <h2>Auditoría Web Integral &amp; CRO (4 Pilares)</h2>
+              <button type="button" id="btn-qdrant-sync" class="btn btn--pequeno">
+                🧠 Sincronizar Catálogo en Qdrant (:6333)
+              </button>
+            </div>
+            <p class="ayuda">
+              Ingresa cualquier URL pública para diagnosticar <strong>1. SEO</strong>, <strong>2. WPO (Core Web Vitals)</strong>,
+              <strong>3. Competencia y DAFO</strong> y <strong>4. Tráfico/CRO</strong>, con recomendación vectorial en Qdrant y creación directa de sitio mejorado.
+            </p>
+
+            <div class="grid-2">
+              <label class="campo">
+                <span>URL del sitio web a auditar *</span>
+                <input type="url" id="audit-url" placeholder="https://revisarauditores.com.co/" />
+              </label>
+              <label class="campo">
+                <span>Contexto opcional (competidores o giro del negocio)</span>
+                <input type="text" id="audit-contexto" maxlength="200" placeholder="Ej: Firma de revisoría fiscal y auditoría en Colombia" />
+              </label>
+            </div>
+
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem">
+              <button type="button" id="btn-ejecutar-auditoria" class="btn btn--primario">
+                🔍 Diagnosticar URL (4 Pilares)
+              </button>
+              <button type="button" id="btn-audit-crear-sitio" class="btn btn--secundario oculto">
+                ⚡ Crear Sitio Mejorado en Forja con estos Datos
+              </button>
+              <button type="button" id="btn-audit-copiar-md" class="btn btn--pequeno oculto">
+                📋 Copiar Informe Markdown
+              </button>
+            </div>
+
+            <div id="audit-resultado" class="audit-contenedor"></div>
           </div>
         </form>
       </section>

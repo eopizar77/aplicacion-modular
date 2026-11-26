@@ -16,10 +16,13 @@ const estado = {
   slugActual: null,
   manifiesto: null,
   assets: [],
+  ultimaAuditoria: null,
 };
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const esc = (s) =>
+  String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 function notificar(texto, tipo = '') {
   const pill = $('#estado-pill');
@@ -674,6 +677,77 @@ function configurarEventosUI() {
     }
   });
 
+  // Pestaña 6: Sincronización Qdrant y Auditoría Web 4 Pilares
+  $('#btn-qdrant-sync').addEventListener('click', async () => {
+    try {
+      notificar('Sincronizando catálogo con Qdrant...');
+      const r = await api('/api/qdrant/sync', { method: 'POST', body: {} });
+      notificar(
+        r.conectado
+          ? `✔ Qdrant sincronizado (${r.puntosIndexados} piezas)`
+          : `Índice local activo (${r.itemsLocales} piezas)`,
+        'ok',
+      );
+    } catch (e) {
+      notificar(e.message, 'err');
+    }
+  });
+
+  $('#btn-ejecutar-auditoria').addEventListener('click', async () => {
+    const url = $('#audit-url').value.trim();
+    if (!url) {
+      notificar('Ingresa una URL https:// para auditar', 'err');
+      return;
+    }
+    const btn = $('#btn-ejecutar-auditoria');
+    btn.disabled = true;
+    $('#audit-resultado').innerHTML = '<div class="audit-card">Analizando DOM, cabeceras HTTP, WPO, DAFO y recomendaciones en Qdrant...</div>';
+    try {
+      notificar(`Auditando ${url}...`);
+      const r = await api('/api/audit-url', {
+        method: 'POST',
+        body: { url, contextoCompetencia: $('#audit-contexto').value.trim() },
+      });
+      estado.ultimaAuditoria = r.reporte;
+      renderizarReporteAuditoria(r.reporte);
+      $('#btn-audit-crear-sitio').classList.remove('oculto');
+      $('#btn-audit-copiar-md').classList.remove('oculto');
+      notificar(`✔ Auditoría completada (${r.reporte.resumenEjecutivo.score}/100)`, 'ok');
+    } catch (e) {
+      $('#audit-resultado').innerHTML = `<div class="audit-card" style="border-color:var(--err)"><strong>Error:</strong> ${esc(e.message)}</div>`;
+      notificar('Error en auditoría', 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#btn-audit-copiar-md').addEventListener('click', async () => {
+    if (!estado.ultimaAuditoria?.markdown) return;
+    await navigator.clipboard.writeText(estado.ultimaAuditoria.markdown);
+    notificar('✔ Informe Markdown copiado al portapapeles', 'ok');
+  });
+
+  $('#btn-audit-crear-sitio').addEventListener('click', async () => {
+    const borrador = estado.ultimaAuditoria?.borradorForja?.manifiestoBase;
+    if (!borrador) return;
+    const btn = $('#btn-audit-crear-sitio');
+    btn.disabled = true;
+    try {
+      notificar(`Creando sitio mejorado ${borrador.slug}...`);
+      const r = await api('/api/audit-to-site', {
+        method: 'POST',
+        body: { manifiesto: borrador },
+      });
+      await recargarCatalogo(r.slug);
+      $$('.tab')[0].click();
+      notificar(`✔ Sitio ${r.slug} creado desde la auditoría`, 'ok');
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
   // Subir asset
   $('#btn-subir-asset').addEventListener('click', async () => {
     const file = $('#input-asset').files?.[0];
@@ -802,6 +876,81 @@ function configurarEventosUI() {
       alert(err.message);
     }
   });
+}
+
+function renderizarReporteAuditoria(rep) {
+  const re = rep.resumenEjecutivo;
+  const t = rep.tecnico;
+  const est = rep.estrategia;
+  const q = rep.qdrant;
+  const colorEstado = re.score >= 80 ? 'pill--ok' : re.score < 55 ? 'pill--err' : '';
+
+  const filasAccion = rep.planAccion
+    .map(
+      (a, idx) => `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${esc(a.pilar)}</strong></td>
+        <td>${esc(a.accion)}</td>
+        <td><strong>${esc(a.impacto)}</strong></td>
+        <td>${esc(a.esfuerzo)}</td>
+        <td>${esc(a.resultadoEsperado)}</td>
+      </tr>`,
+    )
+    .join('');
+
+  const recsQdrant = (q.recomendaciones || [])
+    .map((r) => `<li><strong>${esc(r.nombre)}</strong> — Tema: <code>${esc(r.temaSugerido)}</code> · Licencia: ${esc(r.licencia)} (afinidad ${esc(r.score)})</li>`)
+    .join('');
+
+  $('#audit-resultado').innerHTML = `
+    <div class="audit-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+        <div class="audit-score">
+          <span>Puntuación: ${esc(re.score)} / 100</span>
+          <span class="pill ${colorEstado}">${esc(re.estadoGeneral)}</span>
+        </div>
+        <small style="color:var(--muted)">Stack detectado: <strong>${esc(t.cms)}</strong> · TTFB: <strong>${esc(t.wpo.ttfbMs)} ms</strong></small>
+      </div>
+      <h3>1. Resumen Ejecutivo — Top 3 Hallazgos</h3>
+      <ol style="margin:0.4rem 0 0.8rem;padding-left:1.2rem">
+        ${re.top3Hallazgos.map((h) => `<li>${esc(h)}</li>`).join('')}
+      </ol>
+      <h3>Recomendación Vectorial (${esc(q.origen)})</h3>
+      <ul style="margin:0;padding-left:1.2rem">${recsQdrant}</ul>
+    </div>
+
+    <div class="audit-card">
+      <h3>2. Diagnóstico por los 4 Pilares</h3>
+      <p><strong>Pilar 1 · SEO On-Page:</strong> Title (${esc(t.seo.longitudTitulo)} chars): <code>${esc(t.seo.titulo || 'Ausente')}</code> · Meta Desc (${esc(t.seo.longitudMetaDescription)} chars) · H1: ${esc(t.seo.conteoEncabezados.h1)} · H2: ${esc(t.seo.conteoEncabezados.h2)} · Schema.org: ${esc(t.seo.schemasDetectados.join(', ') || 'Ninguno')}</p>
+      <p><strong>Brechas de Keywords:</strong> ${est.brechasKeywords.map((k) => `<code>${esc(k)}</code>`).join(' · ')}</p>
+      <p><strong>Pilar 2 · WPO (Velocidad):</strong> HTML ${esc(t.wpo.pesoHtmlKb)} KB (${esc(t.wpo.compresion)}) · Scripts: ${esc(t.wpo.scriptsTotales)} (${esc(t.wpo.scriptsBloqueantesHead)} bloqueantes en head) · Imágenes: ${esc(t.wpo.imagenesTotales)} (${esc(t.wpo.imagenesSinAlt)} sin alt, ${esc(t.wpo.imagenesSinLazy)} sin lazy)</p>
+      <p><strong>Pilar 3 · Competencia y Whitespace:</strong> ${esc(est.whitespaceMercado)}</p>
+      <table class="audit-tabla">
+        <tr><th>Fortalezas</th><th>Debilidades</th></tr>
+        <tr>
+          <td>${est.dafo.fortalezas.map((x) => `• ${esc(x)}`).join('<br>')}</td>
+          <td>${est.dafo.debilidades.map((x) => `• ${esc(x)}`).join('<br>')}</td>
+        </tr>
+        <tr><th>Oportunidades</th><th>Amenazas</th></tr>
+        <tr>
+          <td>${est.dafo.oportunidades.map((x) => `• ${esc(x)}`).join('<br>')}</td>
+          <td>${est.dafo.amenazas.map((x) => `• ${esc(x)}`).join('<br>')}</td>
+        </tr>
+      </table>
+      <p style="margin-top:0.7rem"><strong>Pilar 4 · Tráfico y CRO:</strong> WhatsApp directo: <strong>${t.cro.tieneWhatsapp ? 'Sí' : 'No'}</strong> · Formularios: ${esc(t.cro.formularios)} · Analítica: ${esc(t.cro.analiticaDetectada.join(', ') || 'No detectada')}</p>
+    </div>
+
+    <div class="audit-card">
+      <h3>3. Plan de Acción Priorizado (Impacto vs. Esfuerzo)</h3>
+      <table class="audit-tabla">
+        <thead>
+          <tr><th>#</th><th>Pilar</th><th>Acción</th><th>Impacto</th><th>Esfuerzo</th><th>Resultado Esperado</th></tr>
+        </thead>
+        <tbody>${filasAccion}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 iniciar();

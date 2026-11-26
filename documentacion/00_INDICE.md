@@ -25,6 +25,7 @@
 | 11 | [Bitácora](11_BITACORA.md) | Registro con fecha y hora de cada actividad realizada |
 | 12 | [Forja Studio (Fase 3)](12_FORJA_STUDIO.md) | Constructor visual web, API REST, vista previa en vivo y publicación en Proxmox |
 | 13 | [Orquestación Homelab IA y 5 Niveles](13_ORQUESTACION_HOMELAB_IA.md) | Integración con `deepseek_harness`/`n8n`, presupuesto 16 GB RAM, discos 1TB/2TB y pipeline audiovisual |
+| 14 | [Caso Real: Auditoría Revisar Auditores](14_AUDITORIA_REVISAR_AUDITORES.md) | Diagnóstico real en 4 Pilares de `revisarauditores.com.co` y comparativa contra `revisarauditores-v2` |
 
 ## Lectura recomendada
 

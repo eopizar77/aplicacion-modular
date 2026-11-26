@@ -1,0 +1,24 @@
+{
+  "id": "ejecutivo",
+  "nombre": "Ejecutivo",
+  "descripcion": "Sobrio, corporativo y confiable. Ideal para firmas de auditoría, contadores, abogados, consultorías y B2B.",
+  "modo": "claro",
+  "colores": {
+    "primario": "#0F2942",
+    "secundario": "#B8860B",
+    "acento": "#1D4ED8",
+    "fondo": "#F5F7FA",
+    "superficie": "#FFFFFF",
+    "texto": "#0B192C",
+    "textoSuave": "#475569"
+  },
+  "tipografia": {
+    "titulos": "Georgia, 'Palatino Linotype', Palatino, serif",
+    "cuerpo": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+  },
+  "radio": "10px",
+  "escena3d": {
+    "forma": "burbujas",
+    "intensidad": 0.6
+  }
+}

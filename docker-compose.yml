@@ -60,6 +60,8 @@ services:
       - DOMINIO_BASE=${DOMINIO_BASE:-homelab.lan}
       - ESQUEMA_URL=${ESQUEMA_URL:-http}
       - MOSTRAR_INDICE=${MOSTRAR_INDICE:-true}
+      - QDRANT_URL=${QDRANT_URL:-http://192.168.20.52:6333}
+      - DEEPSEEK_HARNESS_URL=${DEEPSEEK_HARNESS_URL:-http://192.168.20.52:3090}
     volumes:
       - forja_sites:/app/sites
       - forja_dist:/app/dist-sites
