@@ -89,6 +89,71 @@ const itemMenu = z
   })
   .strict();
 
+// ============================================================================
+// PILAR 2: Flujo Audiovisual de Agencia en 5 Niveles (con Human-in-the-Loop)
+// ============================================================================
+const anguloTomaSchema = z
+  .object({
+    seccionDestino: z.enum(['hero', 'nosotros', 'servicios', 'detalle']),
+    angulo: z.enum(['frontal', 'lateral', 'cenital', 'macro']),
+    descripcionPrompt: texto(400),
+    assetGenerado: asset.optional(),
+  })
+  .strict();
+
+export const audiovisualSchema = z
+  .object({
+    // Nivel 1: Moodboard e ingesta de referencias visuales
+    nivel1Moodboard: z
+      .object({
+        referencias: z.array(urlHttps).max(6).default([]),
+        estiloVisual: textoOpc(160),
+        ritmoEdicion: z.enum(['fast-pacing', 'cinematic-slow', 'dynamic-commercial']).default('fast-pacing'),
+        paletaExtraida: z.array(hex).max(5).optional(),
+      })
+      .strict()
+      .optional(),
+    // Nivel 2: Ficha técnica visual única de producto/marca (consistencia)
+    nivel2FichaMarca: z
+      .object({
+        sujetoPrincipal: texto(140),
+        vistaFrontalPrompt: texto(300),
+        vistaLateralPrompt: textoOpc(300),
+        detallesTexturaPrompt: textoOpc(300),
+        fichaAsset: asset.optional(),
+      })
+      .strict()
+      .optional(),
+    // Nivel 3: Construcción de 4 ángulos coherentes para secciones de site.json
+    nivel3Tomas: z.array(anguloTomaSchema).max(4).optional(),
+    // Nivel 4: Dirección cinematográfica traducida por deepseek_harness
+    nivel4DireccionCine: z
+      .object({
+        ideaOperador: texto(300),
+        promptTecnicoCamara: textoOpc(600),
+        iluminacionFisica: textoOpc(300),
+        movimientoLente: textoOpc(200),
+      })
+      .strict()
+      .optional(),
+    // Nivel 5: Animación en 2 pasos (Borrador -> Aprobación Humana -> Render 1080p)
+    nivel5Animacion: z
+      .object({
+        formatoSalida: z.enum(['reel-9x16', 'hero-16x9', 'post-1x1']).default('reel-9x16'),
+        estado: z
+          .enum(['sin_iniciar', 'borrador_generado', 'aprobado_humano', 'render_1080p_listo'])
+          .default('sin_iniciar'),
+        borradorUrl: urlHttps.optional(),
+        aprobadoPor: textoOpc(60),
+        fechaAprobacion: z.string().datetime().optional(),
+        renderFinal1080pUrl: urlHttps.optional(),
+        sugerenciaAudioSfx: textoOpc(240),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
 export const sitioSchema = z
   .object({
     $schema: z.string().optional(),
@@ -211,6 +276,60 @@ export const sitioSchema = z
       })
       .strict()
       .optional(),
+    audiovisual: audiovisualSchema.optional(),
+  })
+  .strict();
+
+// ============================================================================
+// PILAR 3: Esquema Maestro de "Forja Apps" (Aplicaciones Empresariales CRUD/ERP)
+// ============================================================================
+const campoEntidadSchema = z
+  .object({
+    nombre: z.string().regex(/^[a-z][a-zA-Z0-9]{1,40}$/, 'Usa camelCase para nombres de campo'),
+    tipo: z.enum(['string', 'text', 'integer', 'decimal', 'boolean', 'date', 'datetime', 'enum', 'uuid']),
+    requerido: z.boolean().default(true),
+    unico: z.boolean().default(false),
+    valoresEnum: z.array(texto(40)).max(20).optional(),
+  })
+  .strict();
+
+const entidadSchema = z
+  .object({
+    nombre: z.string().regex(/^[A-Z][a-zA-Z0-9]{1,40}$/, 'Usa PascalCase para nombres de entidad'),
+    tabla: z.string().regex(/^[a-z][a-z0-9_]{1,40}$/, 'Usa snake_case para la tabla'),
+    campos: z.array(campoEntidadSchema).min(1).max(40),
+  })
+  .strict();
+
+export const appSchema = z
+  .object({
+    slug: z.string().regex(SLUG_RE),
+    nombre: texto(80),
+    tema: z.string().regex(SLUG_RE),
+    stack: z
+      .object({
+        frontend: z.enum(['react', 'vue', 'angular', 'astro-islands']).default('react'),
+        backend: z.enum(['node-fastify', 'node-express', 'python-fastapi']).default('node-fastify'),
+        baseDatos: z.enum(['postgresql', 'mysql']).default('postgresql'),
+      })
+      .strict(),
+    uiTemplates: z
+      .object({
+        login: z.enum(['corporativo-split', 'minimal-glass', 'brutalista-3d']).default('corporativo-split'),
+        dashboard: z.enum(['sidebar-ejecutivo', 'topbar-compacto', 'modular-cards']).default('sidebar-ejecutivo'),
+      })
+      .strict(),
+    seguridad: z
+      .object({
+        auth: z.enum(['jwt-refresh-argon2id', 'session-cookie-strict']).default('jwt-refresh-argon2id'),
+        roles: z.array(z.string().regex(SLUG_RE)).min(1).max(10).default(['admin', 'operador', 'auditor']),
+        rateLimitLoginPorMinuto: z.number().int().min(3).max(30).default(5),
+      })
+      .strict(),
+    modulosErp: z
+      .array(z.enum(['login-rbac', 'tesoreria', 'recepcion-ocr', 'presupuestos', 'rrhh', 'inventarios']))
+      .min(1),
+    entidades: z.array(entidadSchema).max(30).default([]),
   })
   .strict();
 

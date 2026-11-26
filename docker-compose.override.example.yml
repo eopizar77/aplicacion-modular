@@ -1,0 +1,100 @@
+# ============================================================================
+# Forja Modular — Orquestación para Servidor Proxmox (i7 · 16 GB RAM · HDD 1TB + 2TB)
+# ============================================================================
+# Cómo usarlo en Proxmox / Portainer:
+#   Copia este bloque o úsalo con:
+#   docker compose -f docker-compose.yml -f docker-compose.override.example.yml up -d
+#
+# Distribución de Almacenamiento para evitar cuellos de botella de I/O en HDD:
+#   - HDD_1TB_PATH (/mnt/hdd1tb/forja): Manifiestos JSON, base de datos PostgreSQL (alta frecuencia, bajo tamaño).
+#   - HDD_2TB_PATH (/mnt/hdd2tb/forja): dist-sites/, assets multimedia, renders 1080p y backups (lectura/escritura secuencial).
+#   - RAM tmpfs (/app/.forja): Staging temporal de compilación Astro en memoria RAM (0 desgaste de cabezal HDD).
+# ============================================================================
+
+services:
+  web:
+    volumes:
+      - ${HDD_2TB_PATH:-forja_dist}:/usr/share/nginx/html/sites:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 128M
+        reservations:
+          memory: 32M
+
+  studio:
+    environment:
+      - DEEPSEEK_HARNESS_URL=${DEEPSEEK_HARNESS_URL:-http://192.168.20.52:3090}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://192.168.20.52:5678}
+      - DATABASE_URL=postgresql://forja:${POSTGRES_PASSWORD:-cambiar_en_env}@db:5432/forja_nucleo
+    volumes:
+      - ${HDD_1TB_PATH:-forja_sites}:/app/sites
+      - ${HDD_2TB_PATH:-forja_dist}:/app/dist-sites
+    # Staging .forja en memoria RAM: acelera Astro build 4x en discos mecánicos
+    tmpfs:
+      - /app/.forja:rw,noexec,nosuid,size=128m
+      - /tmp:rw,noexec,nosuid,size=64m
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 640M
+        reservations:
+          memory: 128M
+
+  # Fase 2: PostgreSQL 17 Alpine afinado para servidor de 16 GB RAM (máx. 192 MB RAM)
+  db:
+    image: postgres:17-alpine
+    container_name: forja-db
+    profiles: ["db"]
+    restart: unless-stopped
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=48MB"
+      - "-c"
+      - "work_mem=4MB"
+      - "-c"
+      - "maintenance_work_mem=32MB"
+      - "-c"
+      - "effective_cache_size=128MB"
+      - "-c"
+      - "max_connections=25"
+      - "-c"
+      - "random_page_cost=4.0"
+    environment:
+      - POSTGRES_USER=forja
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-cambiar_en_env}
+      - POSTGRES_DB=forja_nucleo
+    volumes:
+      - ${HDD_1TB_DB_PATH:-forja_pgdata}:/var/lib/postgresql/data
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+      - /var/run/postgresql:rw,noexec,nosuid,size=8m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 192M
+        reservations:
+          memory: 64M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forja -d forja_nucleo"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  forja_pgdata:

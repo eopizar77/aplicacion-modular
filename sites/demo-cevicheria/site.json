@@ -3,7 +3,9 @@
   "plantilla": "restaurante",
   "tema": "oceano",
   "personalizacion": {
-    "colores": { "primario": "#0B6E99" }
+    "colores": {
+      "primario": "#0B6E99"
+    }
   },
   "negocio": {
     "nombre": "Mar de Usaquén",
@@ -16,18 +18,33 @@
     "whatsapp": "573000000001",
     "rangoPrecios": "$$$",
     "horarios": [
-      { "dias": "Martes a domingo", "horas": "12:00 – 21:00" },
-      { "dias": "Lunes", "horas": "Cerrado" }
+      {
+        "dias": "Martes a domingo",
+        "horas": "12:00 – 21:00"
+      },
+      {
+        "dias": "Lunes",
+        "horas": "Cerrado"
+      }
     ],
-    "mapa": { "consulta": "Usaquén, Bogotá", "mostrarMapa": true }
+    "mapa": {
+      "consulta": "Usaquén, Bogotá",
+      "mostrarMapa": true
+    }
   },
   "secciones": {
     "nosotros": {
       "titulo": "Del Pacífico a tu mesa",
       "texto": "Trabajamos directamente con pescadores artesanales de Bahía Solano y Tumaco. Cocina honesta, fresca y con sabor a mar.",
       "datos": [
-        { "valor": "48 h", "etiqueta": "del mar a tu plato" },
-        { "valor": "8", "etiqueta": "familias pescadoras aliadas" }
+        {
+          "valor": "48 h",
+          "etiqueta": "del mar a tu plato"
+        },
+        {
+          "valor": "8",
+          "etiqueta": "familias pescadoras aliadas"
+        }
       ]
     },
     "menu": {
@@ -36,18 +53,95 @@
         {
           "nombre": "Ceviches",
           "items": [
-            { "nombre": "Ceviche clásico de corvina", "descripcion": "Leche de tigre, cebolla morada y ají.", "precio": 36000, "destacado": true },
-            { "nombre": "Ceviche de camarón tropical", "descripcion": "Mango, aguacate y maíz tostado.", "precio": 39000 }
+            {
+              "nombre": "Ceviche clásico de corvina",
+              "descripcion": "Leche de tigre, cebolla morada y ají.",
+              "precio": 36000,
+              "destacado": true
+            },
+            {
+              "nombre": "Ceviche de camarón tropical",
+              "descripcion": "Mango, aguacate y maíz tostado.",
+              "precio": 39000
+            }
           ]
         },
         {
           "nombre": "Fuertes",
           "items": [
-            { "nombre": "Encocado de piangua", "descripcion": "Leche de coco, hierbas de azotea y arroz con coco.", "precio": 48000, "etiquetas": ["tradicional"] },
-            { "nombre": "Arroz marinero", "descripcion": "Camarón, calamar, piangua y pescado del día.", "precio": 52000 }
+            {
+              "nombre": "Encocado de piangua",
+              "descripcion": "Leche de coco, hierbas de azotea y arroz con coco.",
+              "precio": 48000,
+              "etiquetas": [
+                "tradicional"
+              ]
+            },
+            {
+              "nombre": "Arroz marinero",
+              "descripcion": "Camarón, calamar, piangua y pescado del día.",
+              "precio": 52000
+            }
           ]
         }
       ]
+    }
+  },
+  "seo": {
+    "descripcion": "Mar de Usaquén en Usaquén, Bogotá D.C.: disfruta Ceviche clásico de corvina. Mira la carta con precios y reserva por WhatsApp."
+  },
+  "audiovisual": {
+    "nivel1Moodboard": {
+      "referencias": [],
+      "estiloVisual": "Estética Océano (claro): alto contraste, texturas orgánicas reales e iluminación cálida de acento",
+      "ritmoEdicion": "fast-pacing",
+      "paletaExtraida": [
+        "#0E7C86",
+        "#2A9D8F",
+        "#F4A261",
+        "#F6FBFC"
+      ]
+    },
+    "nivel2FichaMarca": {
+      "sujetoPrincipal": "Ceviche clásico de corvina de Mar de Usaquén (Usaquén)",
+      "vistaFrontalPrompt": "Plano principal a 45° de Ceviche clásico de corvina recién preparado en Mar de Usaquén, iluminación principal lateral, paleta #0E7C86 y #2A9D8F",
+      "vistaLateralPrompt": "Vista de perfil rasante mostrando volumen, capas y vapor real de Ceviche clásico de corvina sobre superficie claro",
+      "detallesTexturaPrompt": "Macro extremo con lente 100mm f/2.8 destacando texturas frescas, brillo natural y acabado artesanal de Ceviche clásico de corvina"
+    },
+    "nivel3Tomas": [
+      {
+        "seccionDestino": "hero",
+        "angulo": "frontal",
+        "descripcionPrompt": "Hero principal 16:9: Ceviche clásico de corvina en primer plano con atmósfera Océano y espacio negativo a la izquierda para titular"
+      },
+      {
+        "seccionDestino": "nosotros",
+        "angulo": "lateral",
+        "descripcionPrompt": "Retrato documental lateral del equipo de Mar de Usaquén en Usaquén preparando Ceviche clásico de corvina con técnica tradicional"
+      },
+      {
+        "seccionDestino": "servicios",
+        "angulo": "cenital",
+        "descripcionPrompt": "Plano cenital (flat-lay 90°) de mesa completa en Mar de Usaquén mostrando variedad de la carta y bebidas"
+      },
+      {
+        "seccionDestino": "detalle",
+        "angulo": "macro",
+        "descripcionPrompt": "Plano detalle macro de ingredientes frescos y textura de Ceviche clásico de corvina con iluminación de recorte cálida"
+      }
+    ],
+    "nivel4DireccionCine": {
+      "ideaOperador": "Servir leche de tigre fresca sobre ceviche en camara lenta",
+      "promptTecnicoCamara": "Cámara Cinema 6K, lente prime 85mm T1.5, 120fps slow-motion en formato reel-9x16. Sujeto: Ceviche clásico de corvina de Mar de Usaquén (Usaquén). Acción: Servir leche de tigre fresca sobre ceviche en camara lenta. Profundidad de campo reducida con bokeh cremoso.",
+      "iluminacionFisica": "Iluminación motivada de tres puntos: luz principal cálida lateral, contraluz intenso (#F4A261) resaltando silueta y partículas en suspensión, sombras ricas (#F6FBFC).",
+      "movimientoLente": "Dolly-in suave sincronizado con la acción principal + estabilización gimbal con ligero movimiento orgánico al cierre"
+    },
+    "nivel5Animacion": {
+      "formatoSalida": "reel-9x16",
+      "estado": "aprobado_humano",
+      "aprobadoPor": "pito",
+      "fechaAprobacion": "2026-11-26T22:31:32.405Z",
+      "sugerenciaAudioSfx": "SFX foley hiperrealista en los primeros 1.5s (hook auditivo) + base rítmica moderna con corte limpio al llamado a la acción de WhatsApp"
     }
   }
 }

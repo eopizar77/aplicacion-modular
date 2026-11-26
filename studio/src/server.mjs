@@ -22,6 +22,11 @@ import {
   construirSitio,
   escribirIndice,
 } from '../../generator/src/generate.mjs';
+import {
+  auditarYGenerarTomas,
+  traducirDireccionCine,
+  aprobarBorradorYDisparar1080p,
+} from './orchestrator.mjs';
 
 const DIR_STUDIO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIR_PUBLIC = path.join(DIR_STUDIO, 'public');
@@ -334,6 +339,64 @@ async function manejarApi(req, res, url) {
         ok: true,
         asset: rutaRel,
         assets: listarAssetsSitio(slug),
+      });
+    }
+  }
+
+  // Rutas del Puente Orquestador IA (Pilares 1 y 2): /api/sites/:slug/ai/:operacion
+  const mAi = ruta.match(/^\/api\/sites\/([a-z0-9-]+)\/ai\/([a-z0-9-]+)$/);
+  if (mAi && metodo === 'POST') {
+    const [, slug, operacion] = mAi;
+    const { manifiesto } = cargarSitio(slug);
+    const body = await leerCuerpoJson(req);
+
+    if (operacion === 'audit-copy') {
+      const r = await auditarYGenerarTomas(manifiesto);
+      manifiesto.audiovisual = r.audiovisual;
+      if (body.aplicarCopy) {
+        manifiesto.negocio.eslogan = r.sugerenciasCopy.eslogan;
+        manifiesto.seo = { ...(manifiesto.seo || {}), descripcion: r.sugerenciasCopy.descripcionSeo };
+      }
+      const guardado = await guardarSitio(slug, manifiesto);
+      return responderJson(res, 200, {
+        ok: true,
+        origen: r.origen,
+        sugerenciasCopy: r.sugerenciasCopy,
+        manifiesto: guardado,
+      });
+    }
+
+    if (operacion === 'cine-prompt') {
+      const r = await traducirDireccionCine(manifiesto, body.ideaOperador, body.formatoSalida);
+      manifiesto.audiovisual = {
+        ...(manifiesto.audiovisual || {}),
+        nivel4DireccionCine: r.nivel4DireccionCine,
+        nivel5Animacion: r.nivel5Animacion,
+      };
+      const guardado = await guardarSitio(slug, manifiesto);
+      return responderJson(res, 200, {
+        ok: true,
+        origen: r.origen,
+        manifiesto: guardado,
+      });
+    }
+
+    if (operacion === 'approve-render') {
+      const r = await aprobarBorradorYDisparar1080p(manifiesto, body.aprobadoPor || 'operador-studio');
+      manifiesto.audiovisual = {
+        ...(manifiesto.audiovisual || {}),
+        nivel5Animacion: {
+          ...(manifiesto.audiovisual?.nivel5Animacion || {}),
+          estado: r.estado,
+          aprobadoPor: r.aprobadoPor,
+          fechaAprobacion: r.fechaAprobacion,
+        },
+      };
+      const guardado = await guardarSitio(slug, manifiesto);
+      return responderJson(res, 200, {
+        ok: true,
+        ...r,
+        manifiesto: guardado,
       });
     }
   }

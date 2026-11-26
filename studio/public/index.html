@@ -39,6 +39,7 @@
           <button type="button" class="tab" data-tab="negocio" role="tab">2. Negocio y Contacto</button>
           <button type="button" class="tab" data-tab="carta" role="tab">3. Historia y Carta</button>
           <button type="button" class="tab" data-tab="legal" role="tab">4. Opiniones, SEO y Ley 1581</button>
+          <button type="button" class="tab" data-tab="audiovisual" role="tab">5. 🎬 Estudio IA (5 Niveles)</button>
         </nav>
 
         <form id="form-sitio" class="panel-scroll" novalidate>
@@ -258,6 +259,113 @@
                 <input type="email" id="f-legal-email" maxlength="120" />
               </label>
             </div>
+          </div>
+
+          <!-- TAB 5: ESTUDIO AUDIOVISUAL IA (5 NIVELES CON HUMAN-IN-THE-LOOP) -->
+          <div class="tab-panel oculto" data-panel="audiovisual">
+            <div class="cabecera-bloque">
+              <h2>Pipeline Audiovisual de Agencia (5 Niveles)</h2>
+              <button type="button" id="btn-ia-auditar" class="btn btn--primario">
+                🤖 Auditar con DeepSeek + Generar Niveles 1 a 3
+              </button>
+            </div>
+            <p class="ayuda">
+              Conecta con <code>deepseek_harness</code> (o motor local si el contenedor está en ahorro de RAM) para auditar el copy comercial y estructurar las tomas coherentes de la marca.
+            </p>
+
+            <h3>Nivel 1 · Moodboard y Ritmo</h3>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Estilo visual y atmósfera</span>
+                <input type="text" id="f-av-estilo" maxlength="160" placeholder="Ej: Brasas incandescentes, humo cálido y madera rústica" />
+              </label>
+              <label class="campo">
+                <span>Ritmo de edición</span>
+                <select id="f-av-ritmo">
+                  <option value="fast-pacing">Fast Pacing (TikTok / Reels impacto rápido)</option>
+                  <option value="cinematic-slow">Cinematic Slow (Detalle gourmet 120fps)</option>
+                  <option value="dynamic-commercial">Dynamic Commercial (Meta Ads conversión)</option>
+                </select>
+              </label>
+            </div>
+
+            <h3>Nivel 2 · Ficha Técnica Visual Única (Consistencia de Marca)</h3>
+            <label class="campo">
+              <span>Sujeto / Producto principal *</span>
+              <input type="text" id="f-av-sujeto" maxlength="140" placeholder="Ej: Punta de Anca 400g sobre parrilla de hierro con brasas" />
+            </label>
+            <div class="grid-3">
+              <label class="campo">
+                <span>Vista Frontal (Prompt técnico)</span>
+                <textarea id="f-av-frontal" rows="3" maxlength="300"></textarea>
+              </label>
+              <label class="campo">
+                <span>Vista Lateral (Prompt técnico)</span>
+                <textarea id="f-av-lateral" rows="3" maxlength="300"></textarea>
+              </label>
+              <label class="campo">
+                <span>Detalles / Textura Macro</span>
+                <textarea id="f-av-macro" rows="3" maxlength="300"></textarea>
+              </label>
+            </div>
+
+            <h3>Nivel 3 · Construcción de 4 Tomas Coherentes (Hero, Nosotros, Servicios, Detalle)</h3>
+            <div id="lista-tomas-av" class="lista-editable"></div>
+
+            <hr class="divisor" />
+
+            <div class="cabecera-bloque">
+              <h3>Nivel 4 · Dirección Cinematográfica</h3>
+              <button type="button" id="btn-ia-cine" class="btn btn--secundario">
+                🎥 Traducir idea a Prompt de Cámara + Generar Borrador (Paso 1)
+              </button>
+            </div>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Idea simple del operador</span>
+                <input type="text" id="f-av-idea" maxlength="300" placeholder="Ej: Mostrar cómo cae la carne a la parrilla caliente y sale fuego" />
+              </label>
+              <label class="campo">
+                <span>Formato de salida</span>
+                <select id="f-av-formato">
+                  <option value="reel-9x16">Vertical 9:16 (TikTok / Reels / Shorts)</option>
+                  <option value="hero-16x9">Horizontal 16:9 (Hero Web)</option>
+                  <option value="post-1x1">Cuadrado 1:1 (Feed / Carrusel)</option>
+                </select>
+              </label>
+            </div>
+            <label class="campo">
+              <span>Prompt técnico de cámara y lente (Generado por Nivel 4)</span>
+              <textarea id="f-av-camara" rows="2" maxlength="600"></textarea>
+            </label>
+            <div class="grid-2">
+              <label class="campo">
+                <span>Iluminación y física</span>
+                <input type="text" id="f-av-luz" maxlength="300" />
+              </label>
+              <label class="campo">
+                <span>Movimiento de lente</span>
+                <input type="text" id="f-av-mov" maxlength="200" />
+              </label>
+            </div>
+
+            <hr class="divisor" />
+
+            <h3>Nivel 5 · Animación en 2 Pasos (Ahorro de Créditos · Human-in-the-Loop)</h3>
+            <div class="fila-item" style="justify-content:space-between;flex-wrap:wrap">
+              <div>
+                <strong>Estado del pipeline: </strong>
+                <span id="av-estado-badge" class="pill">sin_iniciar</span>
+                <small id="av-aprobacion-info" style="display:block;color:var(--muted);margin-top:4px"></small>
+              </div>
+              <button type="button" id="btn-ia-aprobar" class="btn btn--primario">
+                ✅ Aprobar Borrador (Human-in-the-Loop) y Autorizar Render 1080p
+              </button>
+            </div>
+            <label class="campo" style="margin-top:0.8rem">
+              <span>Diseño sonoro sugerido (SFX + Música)</span>
+              <input type="text" id="f-av-sfx" maxlength="240" />
+            </label>
           </div>
         </form>
       </section>

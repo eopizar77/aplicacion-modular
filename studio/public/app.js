@@ -164,6 +164,64 @@ function renderizarFormulario() {
   $('#f-seo-desc').value = m.seo?.descripcion || '';
   $('#f-legal-resp').value = m.legal?.responsable || '';
   $('#f-legal-email').value = m.legal?.emailDatos || '';
+
+  // Pestaña 5: Estudio Audiovisual IA (5 Niveles)
+  renderizarAudiovisual(m.audiovisual || {});
+}
+
+function renderizarAudiovisual(av) {
+  const n1 = av.nivel1Moodboard || {};
+  const n2 = av.nivel2FichaMarca || {};
+  const n3 = av.nivel3Tomas || [];
+  const n4 = av.nivel4DireccionCine || {};
+  const n5 = av.nivel5Animacion || {};
+
+  $('#f-av-estilo').value = n1.estiloVisual || '';
+  $('#f-av-ritmo').value = n1.ritmoEdicion || 'fast-pacing';
+
+  $('#f-av-sujeto').value = n2.sujetoPrincipal || '';
+  $('#f-av-frontal').value = n2.vistaFrontalPrompt || '';
+  $('#f-av-lateral').value = n2.vistaLateralPrompt || '';
+  $('#f-av-macro').value = n2.detallesTexturaPrompt || '';
+
+  const contTomas = $('#lista-tomas-av');
+  contTomas.innerHTML = '';
+  const tomasBase = n3.length
+    ? n3
+    : [
+        { seccionDestino: 'hero', angulo: 'frontal', descripcionPrompt: '' },
+        { seccionDestino: 'nosotros', angulo: 'lateral', descripcionPrompt: '' },
+        { seccionDestino: 'servicios', angulo: 'cenital', descripcionPrompt: '' },
+        { seccionDestino: 'detalle', angulo: 'macro', descripcionPrompt: '' },
+      ];
+  for (const t of tomasBase) {
+    const fila = document.createElement('div');
+    fila.className = 'fila-item fila-toma-av';
+    fila.dataset.seccion = t.seccionDestino;
+    fila.dataset.angulo = t.angulo;
+    fila.innerHTML = `
+      <strong style="min-width:135px;font-size:0.78rem;text-transform:uppercase">${t.seccionDestino} (${t.angulo})</strong>
+      <input type="text" class="av-toma-prompt" maxlength="400" placeholder="Prompt de la toma..." />
+    `;
+    fila.querySelector('input').value = t.descripcionPrompt || '';
+    contTomas.appendChild(fila);
+  }
+
+  $('#f-av-idea').value = n4.ideaOperador || '';
+  $('#f-av-camara').value = n4.promptTecnicoCamara || '';
+  $('#f-av-luz').value = n4.iluminacionFisica || '';
+  $('#f-av-mov').value = n4.movimientoLente || '';
+
+  $('#f-av-formato').value = n5.formatoSalida || 'reel-9x16';
+  $('#f-av-sfx').value = n5.sugerenciaAudioSfx || '';
+
+  const estadoAv = n5.estado || 'sin_iniciar';
+  const badge = $('#av-estado-badge');
+  badge.textContent = estadoAv;
+  badge.className = `pill ${estadoAv === 'aprobado_humano' || estadoAv === 'render_1080p_listo' ? 'pill--ok' : ''}`;
+  $('#av-aprobacion-info').textContent = n5.fechaAprobacion
+    ? `Aprobado por ${n5.aprobadoPor || 'admin'} el ${new Date(n5.fechaAprobacion).toLocaleString('es-CO')}`
+    : 'Pendiente de aprobación humana (Paso 1 -> Paso 2).';
 }
 
 function renderizarTarjetasTemas() {
@@ -470,6 +528,55 @@ function recolectarManifiesto() {
     };
   } else delete m.legal;
 
+  // Recolectar Pestaña 5: Estudio Audiovisual IA (si tiene sujeto o idea configurados)
+  const sujetoAv = optStr('#f-av-sujeto');
+  const frontalAv = optStr('#f-av-frontal');
+  const ideaAv = optStr('#f-av-idea');
+  if (sujetoAv || frontalAv || ideaAv || m.audiovisual) {
+    const tomasAv = $$('.fila-toma-av')
+      .map((f) => ({
+        seccionDestino: f.dataset.seccion,
+        angulo: f.dataset.angulo,
+        descripcionPrompt: f.querySelector('.av-toma-prompt').value.trim(),
+      }))
+      .filter((t) => t.descripcionPrompt);
+
+    const avPrev = m.audiovisual || {};
+    const avNuevo = {
+      nivel1Moodboard: {
+        referencias: avPrev.nivel1Moodboard?.referencias || [],
+        ...(optStr('#f-av-estilo') && { estiloVisual: optStr('#f-av-estilo') }),
+        ritmoEdicion: $('#f-av-ritmo').value || 'fast-pacing',
+        ...(avPrev.nivel1Moodboard?.paletaExtraida && { paletaExtraida: avPrev.nivel1Moodboard.paletaExtraida }),
+      },
+      ...(sujetoAv &&
+        frontalAv && {
+          nivel2FichaMarca: {
+            sujetoPrincipal: sujetoAv,
+            vistaFrontalPrompt: frontalAv,
+            ...(optStr('#f-av-lateral') && { vistaLateralPrompt: optStr('#f-av-lateral') }),
+            ...(optStr('#f-av-macro') && { detallesTexturaPrompt: optStr('#f-av-macro') }),
+          },
+        }),
+      ...(tomasAv.length && { nivel3Tomas: tomasAv }),
+      ...(ideaAv && {
+        nivel4DireccionCine: {
+          ideaOperador: ideaAv,
+          ...(optStr('#f-av-camara') && { promptTecnicoCamara: optStr('#f-av-camara') }),
+          ...(optStr('#f-av-luz') && { iluminacionFisica: optStr('#f-av-luz') }),
+          ...(optStr('#f-av-mov') && { movimientoLente: optStr('#f-av-mov') }),
+        },
+      }),
+      nivel5Animacion: {
+        ...(avPrev.nivel5Animacion || {}),
+        formatoSalida: $('#f-av-formato').value || 'reel-9x16',
+        estado: avPrev.nivel5Animacion?.estado || 'sin_iniciar',
+        ...(optStr('#f-av-sfx') && { sugerenciaAudioSfx: optStr('#f-av-sfx') }),
+      },
+    };
+    m.audiovisual = avNuevo;
+  }
+
   return m;
 }
 
@@ -502,6 +609,70 @@ function configurarEventosUI() {
   $('#btn-add-dato').addEventListener('click', () => agregarFilaDato());
   $('#btn-add-categoria').addEventListener('click', () => agregarCajaCategoria());
   $('#btn-add-testimonio').addEventListener('click', () => agregarFilaTestimonio());
+
+  // Botones del Puente Orquestador IA (Pestaña 5)
+  $('#btn-ia-auditar').addEventListener('click', async () => {
+    const btn = $('#btn-ia-auditar');
+    btn.disabled = true;
+    try {
+      notificar('Consultando orquestador IA (Niveles 1-3)...');
+      const r = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}/ai/audit-copy`, {
+        method: 'POST',
+        body: { aplicarCopy: true },
+      });
+      estado.manifiesto = r.manifiesto;
+      renderizarFormulario();
+      notificar(`✔ Niveles 1-3 generados (${r.origen})`, 'ok');
+    } catch (e) {
+      notificar(e.message, 'err');
+      alert(e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#btn-ia-cine').addEventListener('click', async () => {
+    const btn = $('#btn-ia-cine');
+    btn.disabled = true;
+    try {
+      notificar('Generando dirección cinematográfica (Nivel 4)...');
+      const r = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}/ai/cine-prompt`, {
+        method: 'POST',
+        body: {
+          ideaOperador: $('#f-av-idea').value,
+          formatoSalida: $('#f-av-formato').value,
+        },
+      });
+      estado.manifiesto = r.manifiesto;
+      renderizarAudiovisual(estado.manifiesto.audiovisual || {});
+      notificar(`✔ Borrador Nivel 4-5 listo (${r.origen})`, 'ok');
+    } catch (e) {
+      notificar(e.message, 'err');
+      alert(e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#btn-ia-aprobar').addEventListener('click', async () => {
+    const btn = $('#btn-ia-aprobar');
+    btn.disabled = true;
+    try {
+      notificar('Aprobando borrador (Human-in-the-Loop)...');
+      const r = await api(`/api/sites/${encodeURIComponent(estado.slugActual)}/ai/approve-render`, {
+        method: 'POST',
+        body: { aprobadoPor: 'admin-studio' },
+      });
+      estado.manifiesto = r.manifiesto;
+      renderizarAudiovisual(estado.manifiesto.audiovisual || {});
+      notificar(`✔ Render 1080p autorizado (${r.estado})`, 'ok');
+    } catch (e) {
+      notificar(e.message, 'err');
+      alert(e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
 
   // Subir asset
   $('#btn-subir-asset').addEventListener('click', async () => {

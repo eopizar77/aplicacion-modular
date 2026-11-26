@@ -24,6 +24,7 @@
 | 10 | [Modelo de negocio](10_MODELO_DE_NEGOCIO.md) | Propuesta de valor, precios sugeridos, flujo comercial |
 | 11 | [Bitácora](11_BITACORA.md) | Registro con fecha y hora de cada actividad realizada |
 | 12 | [Forja Studio (Fase 3)](12_FORJA_STUDIO.md) | Constructor visual web, API REST, vista previa en vivo y publicación en Proxmox |
+| 13 | [Orquestación Homelab IA y 5 Niveles](13_ORQUESTACION_HOMELAB_IA.md) | Integración con `deepseek_harness`/`n8n`, presupuesto 16 GB RAM, discos 1TB/2TB y pipeline audiovisual |
 
 ## Lectura recomendada
 

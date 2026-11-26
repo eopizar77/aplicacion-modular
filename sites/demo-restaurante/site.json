@@ -191,5 +191,54 @@
   },
   "legal": {
     "responsable": "La Brasa de Chapinero S.A.S."
+  },
+  "audiovisual": {
+    "nivel1Moodboard": {
+      "referencias": [
+        "https://www.instagram.com/"
+      ],
+      "estiloVisual": "Brasas incandescentes en cámara lenta, humo cálido y madera rústica",
+      "ritmoEdicion": "fast-pacing",
+      "paletaExtraida": ["#E4572E", "#F3A712", "#FFD166", "#120E0B"]
+    },
+    "nivel2FichaMarca": {
+      "sujetoPrincipal": "Corte Punta de Anca 400g madurado 21 días sobre parrilla de hierro con brasas de leña",
+      "vistaFrontalPrompt": "Plano medio frontal a 45 grados de corte punta de anca jugoso sellado al fuego con papas criollas doradas",
+      "vistaLateralPrompt": "Perfil rasante mostrando el grosor de 4 cm del corte y chispas de leña ascendentes",
+      "detallesTexturaPrompt": "Macro extremo de costra caramelizada, cristales de sal marina y chimichurri fresco"
+    },
+    "nivel3Tomas": [
+      {
+        "seccionDestino": "hero",
+        "angulo": "frontal",
+        "descripcionPrompt": "Parrilla encendida con chispas flotando y corte principal iluminado por fuego lateral"
+      },
+      {
+        "seccionDestino": "nosotros",
+        "angulo": "lateral",
+        "descripcionPrompt": "Maestro parrillero avivando brasas de leña tradicional en cocina artesanal"
+      },
+      {
+        "seccionDestino": "servicios",
+        "angulo": "cenital",
+        "descripcionPrompt": "Mesa familiar servida con parrillada, arepas de queso, guacamole y limonada de coco"
+      },
+      {
+        "seccionDestino": "detalle",
+        "angulo": "macro",
+        "descripcionPrompt": "Corte al cuchillo revelando término medio jugoso y humo cálido"
+      }
+    ],
+    "nivel4DireccionCine": {
+      "ideaOperador": "Mostrar cómo cae la carne a la parrilla caliente y sale fuego, para un Reel de viernes por la tarde",
+      "promptTecnicoCamara": "Lente 85mm f/1.8, 120fps slow-motion, dolly-in suave hacia la parrilla de hierro fundido al impacto del corte",
+      "iluminacionFisica": "Contraluz cálido 2700K de brasa real + rebote suave dorado lateral, humo volumétrico",
+      "movimientoLente": "Push-in lento con micro-vibración en el golpe de fuego"
+    },
+    "nivel5Animacion": {
+      "formatoSalida": "reel-9x16",
+      "estado": "borrador_generado",
+      "sugerenciaAudioSfx": "SFX: chisporroteo intenso de brasa (sizzle) + golpe grave de fuego + guitarra acústica suave"
+    }
   }
 }

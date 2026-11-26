@@ -109,5 +109,18 @@ Registro auditable con fecha y hora (`America/Bogota`, UTC-5) de todas las decis
   - [Dockerfile](file:///d:/piza77/proyectos/APLICACION__MODULAR/Dockerfile) y [docker-compose.yml](file:///d:/piza77/proyectos/APLICACION__MODULAR/docker-compose.yml): Nuevo stage y servicio `forja-studio` (puerto `19086`, usuario no-root `node`) compartiendo el volumen `forja_dist` con `forja-web` (`19085`).
   - Documentación completa en [documentacion/12_FORJA_STUDIO.md](file:///d:/piza77/proyectos/APLICACION__MODULAR/documentacion/12_FORJA_STUDIO.md).
 
+### `[2026-11-26 17:25:05 - 17:32:00 -05:00]` · Implementación de los 4 Pilares de Integración Homelab IA + Flujo Audiovisual (5 Niveles)
+- **Análisis de arquitectura y hardware (`17:25`):** Evaluación del prompt estratégico del usuario para el servidor Proxmox (Intel Core i7, 16 GB RAM, HDD 1TB + HDD 2TB) e identificación de salvaguardas contra OOM, cuellos de botella de I/O en discos mecánicos (`tmpfs` para `.forja/`) y validación Zod obligatoria sobre salidas de LLMs.
+- **Entregable 1 — Orquestación Docker 16 GB RAM y Discos 1TB/2TB (`17:28`):**
+  - [docker-compose.override.example.yml](file:///d:/piza77/proyectos/APLICACION__MODULAR/docker-compose.override.example.yml): Límites estrictos de memoria (`web: 128M`, `studio: 640M`, `db: 192M`), staging `/app/.forja` en `tmpfs` (RAM), separación de volúmenes `HDD_1TB_PATH` / `HDD_2TB_PATH` y PostgreSQL 17 Alpine afinado para bajo consumo.
+- **Entregable 2 — Esquema Maestro Audiovisual (5 Niveles) y Forja Apps (`17:27`):**
+  - [generator/src/schema.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/generator/src/schema.mjs): Inclusión de `audiovisualSchema` (Niveles 1 a 5 con máquina de estados `Human-in-the-Loop`) y `appSchema` (configuración declarativa de **Forja Apps** con templates de Login, Dashboard, módulos ERP y entidades CRUD).
+- **Entregable 3 — Puente Orquestador Real (`17:29`):**
+  - [studio/src/orchestrator.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/src/orchestrator.mjs) y rutas `/api/sites/:slug/ai/audit-copy`, `/api/sites/:slug/ai/cine-prompt` y `/api/sites/:slug/ai/approve-render` en [studio/src/server.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/src/server.mjs).
+- **Entregable 4 — Pestaña 5 "🎬 Estudio IA (5 Niveles)" en Forja Studio y Documentación (`17:30 - 17:32`):**
+  - [studio/public/index.html](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/index.html) y [studio/public/app.js](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/app.js): Controles interactivos para los 5 niveles y botón de aprobación humana antes del render 1080p.
+  - Documentación detallada en [documentacion/13_ORQUESTACION_HOMELAB_IA.md](file:///d:/piza77/proyectos/APLICACION__MODULAR/documentacion/13_ORQUESTACION_HOMELAB_IA.md).
+
+
 
 
