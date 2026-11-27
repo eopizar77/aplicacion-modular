@@ -494,9 +494,11 @@ export function crearServidorStudio() {
       // Resto de rutas: interfaz web de Forja Studio (studio/public/)
       await servirArchivoEstatico(res, DIR_PUBLIC, url.pathname, false);
     } catch (e) {
+      console.error('[forja-studio] Error en solicitud:', req.method, req.url, e?.code || '', e?.message || e);
       const codigo = e instanceof ErrorForja ? 400 : 500;
+      const detalleSistema = e?.code ? ` (${e.code})` : '';
       responderJson(res, codigo, {
-        error: e instanceof ErrorForja ? e.message : 'Error interno del servidor',
+        error: e instanceof ErrorForja ? e.message : `Error interno del servidor${detalleSistema}`,
       });
     }
   });

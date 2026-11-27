@@ -17,7 +17,7 @@ export const RUTAS = {
   temas: path.join(ROOT, 'catalog', 'themes'),
   plantillas: path.join(ROOT, 'catalog', 'templates'),
   sitios: path.join(ROOT, 'sites'),
-  trabajo: path.join(ROOT, '.forja'),
+  trabajo: process.env.FORJA_WORK_DIR ? path.resolve(process.env.FORJA_WORK_DIR) : path.join(ROOT, '.forja'),
   salida: path.join(ROOT, 'dist-sites'),
 };
 

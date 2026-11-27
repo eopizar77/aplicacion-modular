@@ -18,7 +18,7 @@ services:
     ports:
       - "${WEB_PORT:-19085}:8080"
     volumes:
-      - forja_publicados:/usr/share/nginx/html/sites:ro
+      - forja_web_dist:/usr/share/nginx/html/sites:ro
     # Endurecimiento del contenedor (compatible con nginxinc/nginx-unprivileged en modo read_only)
     read_only: true
     tmpfs:
@@ -62,12 +62,12 @@ services:
       - MOSTRAR_INDICE=${MOSTRAR_INDICE:-true}
       - QDRANT_URL=${QDRANT_URL:-http://192.168.20.52:6333}
       - DEEPSEEK_HARNESS_URL=${DEEPSEEK_HARNESS_URL:-http://192.168.20.52:3090}
+      - FORJA_WORK_DIR=/tmp/forja-work
     volumes:
       - forja_sites:/app/sites
-      - forja_publicados:/app/dist-sites
+      - forja_web_dist:/app/dist-sites
     tmpfs:
-      - /app/.forja:rw,noexec,nosuid,size=128m
-      - /tmp:rw,noexec,nosuid,size=64m
+      - /tmp:rw,noexec,nosuid,mode=1777,size=192m
     cap_drop:
       - ALL
     security_opt:
@@ -99,5 +99,5 @@ services:
 
 volumes:
   forja_sites:
-  forja_publicados:
+  forja_web_dist:
 

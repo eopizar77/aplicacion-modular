@@ -51,8 +51,14 @@ LABEL org.opencontainers.image.title="forja-sitios" \
 
 COPY deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY deploy/nginx/seguridad.conf /etc/nginx/snippets/seguridad.conf
-# UID 1000 (node) propietario para escritura desde forja-studio y lectura pública (755/644) para Nginx (UID 101)
-COPY --from=build --chown=1000:1000 /app/dist-sites /usr/share/nginx/html/sites
+# Garantizamos que tanto el directorio raíz como su contenido pertenezcan a UID 1000 (node)
+# y sean legibles por Nginx sin privilegios (UID 101)
+USER root
+RUN mkdir -p /usr/share/nginx/html/sites \
+ && chown -R 1000:1000 /usr/share/nginx/html/sites \
+ && chmod 0775 /usr/share/nginx/html/sites
+COPY --from=build --chown=1000:1000 /app/dist-sites/ /usr/share/nginx/html/sites/
+USER 101
 
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

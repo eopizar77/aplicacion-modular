@@ -29,13 +29,13 @@ services:
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
       - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://192.168.20.52:5678}
       - DATABASE_URL=postgresql://forja:${POSTGRES_PASSWORD:-cambiar_en_env}@db:5432/forja_nucleo
+      - FORJA_WORK_DIR=/tmp/forja-work
     volumes:
       - ${HDD_1TB_PATH:-forja_sites}:/app/sites
-      - ${HDD_2TB_PATH:-forja_dist}:/app/dist-sites
-    # Staging .forja en memoria RAM: acelera Astro build 4x en discos mecánicos
+      - ${HDD_2TB_PATH:-forja_web_dist}:/app/dist-sites
+    # Staging en memoria RAM con mode=1777 compatible con USER node (UID 1000)
     tmpfs:
-      - /app/.forja:rw,noexec,nosuid,size=128m
-      - /tmp:rw,noexec,nosuid,size=64m
+      - /tmp:rw,noexec,nosuid,mode=1777,size=192m
     deploy:
       resources:
         limits:
