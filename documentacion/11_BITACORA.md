@@ -136,6 +136,18 @@ Registro auditable con fecha y hora (`America/Bogota`, UTC-5) de todas las decis
 - **Infraestructura Docker:** Se corrigió `--chown=1000:1000` sobre el volumen compartido (`forja_publicados`), se añadió sincronización automática de semillas `/app/.seed` en el arranque de `forja-studio` y captura completa de `stderr` en `ejecutar()` de [generator/src/generate.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/generator/src/generate.mjs).
 - **Rediseño UI Forja Studio 2.0:** Se renovaron [studio/public/index.html](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/index.html), [studio/public/styles.css](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/styles.css) y [studio/public/app.js](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/app.js) con arquitectura de 3 columnas (*Dark Glassmorphism* + riel lateral con iconos SVG + tarjetas *Bento* + simulador de navegador/smartphone con *Dynamic Island* y notificaciones *Toast*), manteniendo cero dependencias externas y CSP estricta.
 
+---
+
+## Sesión 3 — Viernes 27 de Noviembre de 2026 (`2026-11-27`)
+
+### `[2026-11-27 14:59:55 - 15:04:00 -05:00]` · Corrección y Auto-Ensamblaje en `/api/audit-to-site`
+- **Diagnóstico:** El botón *"Transformar en Sitio Mejorado Forja"* dejaba fijo el estado *"Creando sitio mejorado..."* cuando el `<slug>-v2` ya existía en `sites/`, no invocaba `construirSitio(slug)` automáticamente y requería sanitización previa de correos/teléfonos extraídos de HTML externo.
+- **Solución aplicada:**
+  - [studio/src/auditor.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/src/auditor.mjs): Validación preventiva de `slug`, `nombre`, `email` y `telefono` decodificados antes de armar `manifiestoBase`.
+  - [studio/src/server.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/src/server.mjs): `POST /api/audit-to-site` ahora soporta creación o actualización idempotente, aplica *rollback* si falla la validación y ejecuta `construirSitio(slug)` + `reconstruirIndiceGlobal()` en el mismo flujo.
+  - [studio/public/app.js](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/app.js): Indicador de progreso en el botón (`⏳ Ensamblando sitio 3D...`) y manejo de errores conectado a `notificar(..., 'err')` con *Toast*.
+
+
 
 
 

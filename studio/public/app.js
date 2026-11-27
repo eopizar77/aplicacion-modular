@@ -740,22 +740,28 @@ function configurarEventosUI() {
 
   $('#btn-audit-crear-sitio').addEventListener('click', async () => {
     const borrador = estado.ultimaAuditoria?.borradorForja?.manifiestoBase;
-    if (!borrador) return;
+    if (!borrador) {
+      notificar('Primero ejecuta el diagnóstico de una URL', 'err');
+      return;
+    }
     const btn = $('#btn-audit-crear-sitio');
+    const textoOriginal = btn.textContent;
     btn.disabled = true;
+    btn.textContent = '⏳ Ensamblando sitio 3D...';
     try {
-      notificar(`Creando sitio mejorado ${borrador.slug}...`);
+      notificar(`Creando y ensamblando ${borrador.slug} (3-5s)...`);
       const r = await api('/api/audit-to-site', {
         method: 'POST',
         body: { manifiesto: borrador },
       });
       await recargarCatalogo(r.slug);
       $$('.tab')[0].click();
-      notificar(`✔ Sitio ${r.slug} creado desde la auditoría`, 'ok');
+      notificar(`✔ Sitio ${r.slug} generado y ensamblado en ${r.segundos}s`, 'ok');
     } catch (e) {
-      alert(e.message);
+      notificar(`Error: ${e.message}`, 'err');
     } finally {
       btn.disabled = false;
+      btn.textContent = textoOriginal;
     }
   });
 

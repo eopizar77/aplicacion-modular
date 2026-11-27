@@ -773,21 +773,33 @@ function construirEstrategiaDeterminista(t, ia) {
 
 /** Construye un manifiesto válido de Forja Modular pre-poblado con los datos reales extraídos de la URL auditada. */
 function construirBorradorForja(t, recomendacionQdrant) {
-  const slugBase = t.dominio
+  const slugLimpio = t.dominio
     .replace(/^www\./i, '')
     .split('.')[0]
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 40);
+  const slugBase = slugLimpio.length >= 2 ? slugLimpio : 'sitio-auditado';
 
-  const nombreLimpio = (
-    t.seo.titulo.replace(/^inicio\s*[-|–—:]\s*/i, '').split(/[|\-–—]/)[0] || t.dominio
-  )
-    .trim()
-    .slice(0, 80);
-  const temaElegido = recomendacionQdrant?.recomendaciones?.[0]?.temaSugerido || 'ejecutivo';
+  const parteTitulo = t.seo.titulo
+    .replace(/^inicio\s*[-|–—:]\s*/i, '')
+    .split(/[|\-–—]/)[0]
+    .trim();
+  const nombreLimpio = (parteTitulo || t.dominio).trim().slice(0, 80);
+
+  const temaCandidato = recomendacionQdrant?.recomendaciones?.[0]?.temaSugerido || 'ejecutivo';
+  const temasValidos = new Set(['brasa', 'oceano', 'bosque', 'ejecutivo']);
+  const temaElegido = temasValidos.has(temaCandidato) ? temaCandidato : 'ejecutivo';
+
   const waDigitos = (t.cro.enlaceWhatsapp.match(/(\d{10,15})/) || [])[1] || undefined;
+  const telDecodificado = decodeURIComponent(t.cro.telefonos[0] || '').trim();
+  const telValido = /^\+?[0-9 ()-]{7,20}$/.test(telDecodificado) ? telDecodificado : undefined;
+  const mailDecodificado = decodeURIComponent(t.cro.correos[0] || '').trim();
+  const mailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailDecodificado) && mailDecodificado.length <= 120
+    ? mailDecodificado
+    : undefined;
   const candidatosServicios = [...t.seo.h2Textos, ...(t.seo.h3h4Textos || [])].filter(
     (s) => s.length > 3 && !/^sede\b|^inicio\b|^contacto\b/i.test(s),
   );
@@ -823,9 +835,9 @@ function construirBorradorForja(t, recomendacionQdrant) {
         categoria: 'Firma Especializada · Colombia',
         ciudad: 'Bogotá D.C.',
         direccion: 'Atención corporativa en Bogotá y toda Colombia',
-        ...(t.cro.telefonos[0] && /^\+?[0-9 ()-]{7,20}$/.test(t.cro.telefonos[0]) && { telefono: t.cro.telefonos[0] }),
+        ...(telValido && { telefono: telValido }),
         ...(waDigitos && { whatsapp: waDigitos }),
-        ...(t.cro.correos[0] && { email: t.cro.correos[0] }),
+        ...(mailValido && { email: mailValido }),
         mapa: {
           consulta: `${nombreLimpio}, Bogotá, Colombia`,
           mostrarMapa: true,
@@ -861,7 +873,7 @@ function construirBorradorForja(t, recomendacionQdrant) {
       },
       legal: {
         responsable: nombreLimpio,
-        ...(t.cro.correos[0] && { emailDatos: t.cro.correos[0] }),
+        ...(mailValido && { emailDatos: mailValido }),
       },
     },
   };

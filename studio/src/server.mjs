@@ -418,24 +418,50 @@ async function manejarApi(req, res, url) {
     return responderJson(res, 200, { ok: true, reporte });
   }
 
-  // POST /api/audit-to-site -> crea un nuevo sitio limpio en Forja Modular a partir de una auditoría
+  // POST /api/audit-to-site -> crea o actualiza el sitio desde una auditoría y lo ensambla en 3D automáticamente
   if (ruta === '/api/audit-to-site' && metodo === 'POST') {
+    if (buildEnCurso) {
+      return responderJson(res, 409, { error: 'Ya hay un ensamblaje en curso, espera unos segundos.' });
+    }
     const body = await leerCuerpoJson(req);
     const manifiestoPropuesto = body.manifiesto;
     if (!manifiestoPropuesto?.slug) throw new ErrorForja('Falta manifiesto base para crear el sitio');
     const slug = String(manifiestoPropuesto.slug).trim().toLowerCase();
-    await crearSitio(slug, {
-      plantilla: manifiestoPropuesto.plantilla || 'restaurante',
-      tema: manifiestoPropuesto.tema || 'ejecutivo',
-      nombre: manifiestoPropuesto.negocio?.nombre,
-    });
-    // Usamos únicamente los datos extraídos del negocio auditado (sin arrastrar datos del ejemplo gastronómico)
-    const limpio = {
-      ...manifiestoPropuesto,
-      slug,
-    };
-    const guardado = await guardarSitio(slug, limpio);
-    return responderJson(res, 201, { ok: true, slug, manifiesto: guardado });
+    const dirSitio = path.join(RUTAS.sitios, slug);
+    const yaExistia = fs.existsSync(dirSitio);
+
+    if (!yaExistia) {
+      await crearSitio(slug, {
+        plantilla: manifiestoPropuesto.plantilla || 'restaurante',
+        tema: manifiestoPropuesto.tema || 'ejecutivo',
+        nombre: manifiestoPropuesto.negocio?.nombre,
+      });
+    }
+
+    let guardado;
+    try {
+      guardado = await guardarSitio(slug, { ...manifiestoPropuesto, slug });
+    } catch (err) {
+      // Rollback: si era un sitio nuevo y falló la validación, no dejamos carpeta huérfana
+      if (!yaExistia) await fsp.rm(dirSitio, { recursive: true, force: true });
+      throw err;
+    }
+
+    buildEnCurso = true;
+    try {
+      const compilacion = await construirSitio(slug);
+      await reconstruirIndiceGlobal();
+      return responderJson(res, yaExistia ? 200 : 201, {
+        ok: true,
+        slug,
+        actualizado: yaExistia,
+        segundos: compilacion.segundos,
+        previewUrl: `/${slug}/`,
+        manifiesto: guardado,
+      });
+    } finally {
+      buildEnCurso = false;
+    }
   }
 
   return responderJson(res, 404, { error: `Ruta API no encontrada: ${metodo} ${ruta}` });
