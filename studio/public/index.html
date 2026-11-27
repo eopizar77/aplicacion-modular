@@ -4,81 +4,196 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Forja Studio · Ensamblador Visual de Sitios 3D</title>
+    <title>Forja Studio · IA Web &amp; 3D Factory</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <!-- Barra superior -->
+    <div class="ambient-glow" aria-hidden="true"></div>
+
+    <!-- Barra superior flotante -->
     <header class="topbar">
       <div class="topbar__marca">
-        <span class="topbar__icono" aria-hidden="true">⚒️</span>
-        <div>
-          <strong>Forja Studio</strong>
-          <small>Ensamblador Modular v0.1.0</small>
+        <div class="marca-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <div class="marca-texto">
+          <div class="marca-fila">
+            <strong>Forja Studio</strong>
+            <span class="badge-pro">IA FACTORY</span>
+          </div>
+          <small>Ensamblador Modular Web &amp; 3D</small>
         </div>
       </div>
 
       <div class="topbar__selector">
-        <label for="select-sitio">Sitio activo:</label>
-        <select id="select-sitio" aria-label="Seleccionar sitio"></select>
-        <button type="button" id="btn-nuevo-sitio" class="btn btn--secundario">+ Nuevo negocio</button>
+        <div class="proyecto-switcher">
+          <span class="punto-vivo" aria-hidden="true"></span>
+          <label for="select-sitio" class="sr-only">Proyecto activo</label>
+          <select id="select-sitio" aria-label="Seleccionar sitio"></select>
+        </div>
+        <button type="button" id="btn-nuevo-sitio" class="btn btn--vidrio">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Nuevo proyecto</span>
+        </button>
       </div>
 
       <div class="topbar__acciones">
         <span id="estado-pill" class="pill">Listo</span>
-        <button type="button" id="btn-guardar" class="btn btn--secundario">Guardar JSON</button>
-        <button type="button" id="btn-ensamblar" class="btn btn--primario">⚡ Guardar y Ensamblar 3D</button>
+        <button type="button" id="btn-guardar" class="btn btn--vidrio">Guardar cambios</button>
+        <button type="button" id="btn-ensamblar" class="btn btn--primario">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+            <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+          </svg>
+          <span>Guardar y Ensamblar 3D</span>
+        </button>
       </div>
     </header>
 
-    <!-- Área principal dividida: Editor (izquierda) + Vista previa en vivo (derecha) -->
-    <div class="layout">
-      <section class="editor" aria-label="Configurador del sitio">
+    <!-- Espacio de trabajo en 3 columnas: Riel de Navegación + Inspector Bento + Escenario Vivo -->
+    <div class="workspace">
+      <!-- 1. Riel lateral moderno -->
+      <aside class="nav-rail" aria-label="Módulos de Forja Studio">
         <nav class="tabs" role="tablist">
-          <button type="button" class="tab tab--activa" data-tab="diseno" role="tab">1. Tema, Colores y Logo</button>
-          <button type="button" class="tab" data-tab="negocio" role="tab">2. Negocio y Contacto</button>
-          <button type="button" class="tab" data-tab="carta" role="tab">3. Historia y Carta</button>
-          <button type="button" class="tab" data-tab="legal" role="tab">4. Opiniones, SEO y Ley 1581</button>
-          <button type="button" class="tab" data-tab="audiovisual" role="tab">5. 🎬 Estudio IA</button>
-          <button type="button" class="tab" data-tab="auditor" role="tab">6. 🔍 Auditor URL &amp; CRO</button>
+          <button type="button" class="tab tab--activa" data-tab="diseno" role="tab">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9">
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.5 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-4.9-4.5-8.8-10-8.8z" />
+            </svg>
+            <div>
+              <strong>Diseño &amp; 3D</strong>
+              <small>Temas, tokens y logo</small>
+            </div>
+          </button>
+
+          <button type="button" class="tab" data-tab="negocio" role="tab">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01" />
+            </svg>
+            <div>
+              <strong>Identidad</strong>
+              <small>Datos, WhatsApp y mapa</small>
+            </div>
+          </button>
+
+          <button type="button" class="tab" data-tab="carta" role="tab">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M7 8h10M7 12h6M7 16h8" />
+            </svg>
+            <div>
+              <strong>Portafolio</strong>
+              <small>Historia, carta o servicios</small>
+            </div>
+          </button>
+
+          <button type="button" class="tab" data-tab="legal" role="tab">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+            <div>
+              <strong>SEO &amp; Ley 1581</strong>
+              <small>Reseñas y privacidad</small>
+            </div>
+          </button>
+
+          <div class="rail-separador"><span>INTELIGENCIA ARTIFICIAL</span></div>
+
+          <button type="button" class="tab" data-tab="audiovisual" role="tab">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9">
+              <rect x="2" y="4" width="20" height="16" rx="3" />
+              <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" />
+            </svg>
+            <div>
+              <strong>Estudio Cine IA</strong>
+              <small>Pipeline 5 niveles</small>
+            </div>
+          </button>
+
+          <button type="button" class="tab" data-tab="auditor" role="tab">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.35-4.35M8 11h6M11 8v6" />
+            </svg>
+            <div>
+              <strong>Auditor &amp; CRO</strong>
+              <small>4 pilares + Qdrant</small>
+            </div>
+          </button>
         </nav>
 
+        <div class="rail-footer">
+          <span>Proxmox Homelab · Non-Root</span>
+        </div>
+      </aside>
+
+      <!-- 2. Inspector central con tarjetas Bento -->
+      <section class="editor" aria-label="Configurador del sitio">
         <form id="form-sitio" class="panel-scroll" novalidate>
           <!-- TAB 1: DISEÑO, TEMA, COLORES Y ASSETS -->
           <div class="tab-panel" data-panel="diseno">
-            <h2>Plantilla y Tema Base (Design Tokens)</h2>
-            <div class="grid-2">
-              <label class="campo">
-                <span>Plantilla sectorial</span>
-                <select id="f-plantilla"></select>
-              </label>
-              <label class="campo">
-                <span>Slug (ruta del sitio)</span>
-                <input type="text" id="f-slug" readonly />
-              </label>
+            <header class="panel-header">
+              <div>
+                <span class="eyebrow">MÓDULO 01 · SISTEMA DE DISEÑO</span>
+                <h2>Apariencia, Escena 3D y Marca</h2>
+              </div>
+            </header>
+
+            <div class="bento-card">
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Arquitectura de plantilla</span>
+                  <select id="f-plantilla"></select>
+                </label>
+                <label class="campo">
+                  <span>Ruta pública (slug)</span>
+                  <input type="text" id="f-slug" readonly />
+                </label>
+              </div>
             </div>
 
-            <h3>Elige el Tema y Escena 3D</h3>
-            <div id="tarjetas-temas" class="temas-grid"></div>
-
-            <div class="cabecera-bloque">
-              <h3>Personalizar paleta de colores</h3>
-              <button type="button" id="btn-reset-colores" class="btn btn--pequeno">Restaurar colores del tema</button>
+            <div class="bento-card">
+              <div class="cabecera-bloque">
+                <div>
+                  <h3>Tema Visual y Motor Three.js</h3>
+                  <p class="ayuda">Selecciona una atmósfera base; incluye geometría 3D procedural optimizada para móvil.</p>
+                </div>
+              </div>
+              <div id="tarjetas-temas" class="temas-grid"></div>
             </div>
-            <p class="ayuda">Cada cambio recalcula sombras, brillos y colores de la escena 3D en Three.js.</p>
-            <div id="grid-colores" class="colores-grid"></div>
 
-            <h3>Logo e Imágenes del Sitio</h3>
-            <div class="grid-2">
-              <label class="campo">
-                <span>Logo actual</span>
-                <select id="f-logo"></select>
-              </label>
-              <div class="campo">
-                <span>Subir nueva imagen o logo (PNG, JPG, WEBP, SVG limpio, máx. 5 MB)</span>
-                <div class="fila-upload">
-                  <input type="file" id="input-asset" accept=".png,.jpg,.jpeg,.webp,.avif,.svg,.gif" />
-                  <button type="button" id="btn-subir-asset" class="btn btn--secundario">Subir asset</button>
+            <div class="bento-card">
+              <div class="cabecera-bloque">
+                <div>
+                  <h3>Design Tokens (Paleta de Colores)</h3>
+                  <p class="ayuda">Ajusta cualquier token para recalcular gradientes, sombras y luces de la escena 3D.</p>
+                </div>
+                <button type="button" id="btn-reset-colores" class="btn btn--pequeno">Restaurar tema</button>
+              </div>
+              <div id="grid-colores" class="colores-grid"></div>
+            </div>
+
+            <div class="bento-card">
+              <h3>Activos de Marca (Logo e Imágenes)</h3>
+              <p class="ayuda">Validación activa contra XSS en SVG y peso máximo de 5 MB por archivo.</p>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Logo activo en cabecera</span>
+                  <select id="f-logo"></select>
+                </label>
+                <div class="campo">
+                  <span>Subir nuevo archivo (PNG, JPG, WEBP, SVG)</span>
+                  <div class="fila-upload">
+                    <input type="file" id="input-asset" accept=".png,.jpg,.jpeg,.webp,.avif,.svg,.gif" />
+                    <button type="button" id="btn-subir-asset" class="btn btn--vidrio">Subir</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -86,323 +201,373 @@
 
           <!-- TAB 2: NEGOCIO Y CONTACTO -->
           <div class="tab-panel oculto" data-panel="negocio">
-            <h2>Identidad del Negocio</h2>
-            <div class="grid-2">
+            <header class="panel-header">
+              <div>
+                <span class="eyebrow">MÓDULO 02 · DATOS COMERCIALES</span>
+                <h2>Identidad del Negocio y Conversión</h2>
+              </div>
+            </header>
+
+            <div class="bento-card">
+              <h3>Información Principal</h3>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Nombre comercial *</span>
+                  <input type="text" id="f-nombre" maxlength="80" required />
+                </label>
+                <label class="campo">
+                  <span>Categoría o especialidad</span>
+                  <input type="text" id="f-categoria" maxlength="60" placeholder="Ej: Asadero · Parrilla o Firma Auditora" />
+                </label>
+              </div>
+
               <label class="campo">
-                <span>Nombre comercial *</span>
-                <input type="text" id="f-nombre" maxlength="80" required />
+                <span>Titular / Eslogan del Hero</span>
+                <input type="text" id="f-eslogan" maxlength="120" />
               </label>
+
               <label class="campo">
-                <span>Categoría (ej. Asadero · Parrilla)</span>
-                <input type="text" id="f-categoria" maxlength="60" />
+                <span>Resumen ejecutivo (usado en SEO y Schema.org) *</span>
+                <textarea id="f-descripcion" rows="2" maxlength="400" required></textarea>
               </label>
             </div>
 
-            <label class="campo">
-              <span>Eslogan principal</span>
-              <input type="text" id="f-eslogan" maxlength="120" />
-            </label>
+            <div class="bento-card">
+              <h3>Ubicación y Canales Directos</h3>
+              <div class="grid-3">
+                <label class="campo">
+                  <span>Ciudad *</span>
+                  <input type="text" id="f-ciudad" maxlength="60" required />
+                </label>
+                <label class="campo">
+                  <span>Barrio / Zona</span>
+                  <input type="text" id="f-barrio" maxlength="60" />
+                </label>
+                <label class="campo">
+                  <span>Dirección física *</span>
+                  <input type="text" id="f-direccion" maxlength="140" required />
+                </label>
+              </div>
 
-            <label class="campo">
-              <span>Descripción corta (SEO y Schema.org) *</span>
-              <textarea id="f-descripcion" rows="2" maxlength="400" required></textarea>
-            </label>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>WhatsApp directo (indicativo + número)</span>
+                  <input type="text" id="f-whatsapp" placeholder="573001234567" maxlength="15" />
+                </label>
+                <label class="campo">
+                  <span>Teléfono de contacto</span>
+                  <input type="text" id="f-telefono" placeholder="+57 601 000 0000" maxlength="20" />
+                </label>
+              </div>
 
-            <div class="grid-3">
-              <label class="campo">
-                <span>Ciudad *</span>
-                <input type="text" id="f-ciudad" maxlength="60" required />
-              </label>
-              <label class="campo">
-                <span>Barrio / Localidad</span>
-                <input type="text" id="f-barrio" maxlength="60" />
-              </label>
-              <label class="campo">
-                <span>Dirección *</span>
-                <input type="text" id="f-direccion" maxlength="140" required />
-              </label>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Correo corporativo</span>
+                  <input type="email" id="f-email" maxlength="120" />
+                </label>
+                <label class="campo">
+                  <span>Segmento de precios</span>
+                  <select id="f-rango">
+                    <option value="">No mostrar rango</option>
+                    <option value="$">$ · Económico</option>
+                    <option value="$$">$$ · Moderado</option>
+                    <option value="$$$">$$$ · Especializado</option>
+                    <option value="$$$$">$$$$ · Premium</option>
+                  </select>
+                </label>
+              </div>
             </div>
 
-            <div class="grid-4">
-              <label class="campo">
-                <span>WhatsApp (con 57, solo dígitos)</span>
-                <input type="text" id="f-whatsapp" placeholder="573001234567" maxlength="15" />
-              </label>
-              <label class="campo">
-                <span>Teléfono fijo/celular</span>
-                <input type="text" id="f-telefono" placeholder="+57 601 000 0000" maxlength="20" />
-              </label>
-              <label class="campo">
-                <span>Correo electrónico</span>
-                <input type="email" id="f-email" maxlength="120" />
-              </label>
-              <label class="campo">
-                <span>Rango de precios</span>
-                <select id="f-rango">
-                  <option value="">(Sin especificar)</option>
-                  <option value="$">$ Económico</option>
-                  <option value="$$">$$ Moderado</option>
-                  <option value="$$$">$$$ Especial</option>
-                  <option value="$$$$">$$$$ Gourmet</option>
-                </select>
-              </label>
+            <div class="bento-card">
+              <h3>Ecosistema Social y Geolocalización</h3>
+              <div class="grid-3">
+                <label class="campo">
+                  <span>Instagram (https://)</span>
+                  <input type="url" id="f-ig" placeholder="https://www.instagram.com/..." />
+                </label>
+                <label class="campo">
+                  <span>Facebook (https://)</span>
+                  <input type="url" id="f-fb" placeholder="https://www.facebook.com/..." />
+                </label>
+                <label class="campo">
+                  <span>TikTok (https://)</span>
+                  <input type="url" id="f-tt" placeholder="https://www.tiktok.com/..." />
+                </label>
+              </div>
+
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Consulta para Google Maps / Waze</span>
+                  <input type="text" id="f-mapa-q" maxlength="200" />
+                </label>
+                <label class="campo campo--switch">
+                  <input type="checkbox" id="f-mapa-mostrar" checked />
+                  <span>Embeber mapa interactivo en el sitio</span>
+                </label>
+              </div>
             </div>
 
-            <h3>Redes Sociales (https://) y Mapa</h3>
-            <div class="grid-3">
-              <label class="campo">
-                <span>Instagram URL</span>
-                <input type="url" id="f-ig" placeholder="https://www.instagram.com/..." />
-              </label>
-              <label class="campo">
-                <span>Facebook URL</span>
-                <input type="url" id="f-fb" placeholder="https://www.facebook.com/..." />
-              </label>
-              <label class="campo">
-                <span>TikTok URL</span>
-                <input type="url" id="f-tt" placeholder="https://www.tiktok.com/..." />
-              </label>
+            <div class="bento-card">
+              <div class="cabecera-bloque">
+                <h3>Horarios de Atención</h3>
+                <button type="button" id="btn-add-horario" class="btn btn--pequeno">+ Añadir franja</button>
+              </div>
+              <div id="lista-horarios" class="lista-editable"></div>
             </div>
-
-            <div class="grid-2">
-              <label class="campo">
-                <span>Búsqueda en Google Maps / Waze</span>
-                <input type="text" id="f-mapa-q" maxlength="200" />
-              </label>
-              <label class="campo campo--check">
-                <input type="checkbox" id="f-mapa-mostrar" checked />
-                <span>Mostrar mapa interactivo en la página</span>
-              </label>
-            </div>
-
-            <div class="cabecera-bloque">
-              <h3>Horarios de atención</h3>
-              <button type="button" id="btn-add-horario" class="btn btn--pequeno">+ Agregar horario</button>
-            </div>
-            <div id="lista-horarios" class="lista-editable"></div>
           </div>
 
-          <!-- TAB 3: NOSOTROS Y CARTA -->
+          <!-- TAB 3: NOSOTROS Y CARTA / PORTAFOLIO -->
           <div class="tab-panel oculto" data-panel="carta">
-            <h2>Sección "Nuestra Historia"</h2>
-            <label class="campo">
-              <span>Título de la sección</span>
-              <input type="text" id="f-nos-titulo" maxlength="80" />
-            </label>
-            <label class="campo">
-              <span>Relato del negocio (separa párrafos con Enter)</span>
-              <textarea id="f-nos-texto" rows="3" maxlength="1200"></textarea>
-            </label>
+            <header class="panel-header">
+              <div>
+                <span class="eyebrow">MÓDULO 03 · CONTENIDO Y OFERTA</span>
+                <h2>Historia y Catálogo con Tarjetas 3D</h2>
+              </div>
+            </header>
 
-            <div class="cabecera-bloque">
-              <h3>Tarjetas de cifras clave (máx. 4)</h3>
-              <button type="button" id="btn-add-dato" class="btn btn--pequeno">+ Agregar cifra</button>
-            </div>
-            <div id="lista-datos" class="lista-editable"></div>
-
-            <hr class="divisor" />
-
-            <h2>La Carta (Menú con Tarjetas 3D)</h2>
-            <div class="grid-2">
+            <div class="bento-card">
+              <h3>Historia y Diferenciadores</h3>
               <label class="campo">
-                <span>Título de la carta</span>
-                <input type="text" id="f-menu-titulo" maxlength="80" />
+                <span>Título de presentación</span>
+                <input type="text" id="f-nos-titulo" maxlength="80" />
               </label>
               <label class="campo">
-                <span>Subtítulo / nota</span>
-                <input type="text" id="f-menu-sub" maxlength="200" />
+                <span>Narrativa (usa Enter para separar párrafos)</span>
+                <textarea id="f-nos-texto" rows="3" maxlength="1200"></textarea>
               </label>
+
+              <div class="cabecera-bloque" style="margin-top:0.9rem">
+                <span>Indicadores de autoridad (máx. 4 tarjetas 3D)</span>
+                <button type="button" id="btn-add-dato" class="btn btn--pequeno">+ Añadir indicador</button>
+              </div>
+              <div id="lista-datos" class="lista-editable"></div>
             </div>
 
-            <div class="cabecera-bloque">
-              <h3>Categorías y Platos</h3>
-              <button type="button" id="btn-add-categoria" class="btn btn--secundario">+ Nueva categoría</button>
+            <div class="bento-card">
+              <div class="cabecera-bloque">
+                <div>
+                  <h3>Carta de Productos o Portafolio de Servicios</h3>
+                  <p class="ayuda">Si dejas el precio en <code>0</code>, el sitio mostrará automáticamente <strong>"A cotizar"</strong> (ideal para empresas B2B).</p>
+                </div>
+                <button type="button" id="btn-add-categoria" class="btn btn--vidrio">+ Nueva categoría</button>
+              </div>
+
+              <div class="grid-2" style="margin-top:0.6rem">
+                <label class="campo">
+                  <span>Título de la sección</span>
+                  <input type="text" id="f-menu-titulo" maxlength="80" />
+                </label>
+                <label class="campo">
+                  <span>Subtítulo descriptivo</span>
+                  <input type="text" id="f-menu-sub" maxlength="200" />
+                </label>
+              </div>
+
+              <div id="lista-categorias" class="categorias-editor"></div>
             </div>
-            <div id="lista-categorias" class="categorias-editor"></div>
           </div>
 
           <!-- TAB 4: TESTIMONIOS, SEO Y LEY 1581 -->
           <div class="tab-panel oculto" data-panel="legal">
-            <div class="cabecera-bloque">
-              <h2>Testimonios de Clientes</h2>
-              <button type="button" id="btn-add-testimonio" class="btn btn--pequeno">+ Agregar opinión</button>
-            </div>
-            <div id="lista-testimonios" class="lista-editable"></div>
-
-            <hr class="divisor" />
-
-            <h2>SEO (Google y WhatsApp)</h2>
-            <div class="grid-2">
-              <label class="campo">
-                <span>Título SEO (máx. 70 caracteres)</span>
-                <input type="text" id="f-seo-titulo" maxlength="70" />
-              </label>
-              <label class="campo">
-                <span>Descripción SEO (máx. 160 caracteres)</span>
-                <input type="text" id="f-seo-desc" maxlength="160" />
-              </label>
-            </div>
-
-            <hr class="divisor" />
-
-            <h2>Cumplimiento Legal — Ley 1581 de 2012 (Habeas Data)</h2>
-            <div class="grid-3">
-              <label class="campo">
-                <span>Razón social / Responsable</span>
-                <input type="text" id="f-legal-resp" maxlength="120" />
-              </label>
-              <label class="campo">
-                <span>NIT</span>
-                <input type="text" id="f-nit" placeholder="901.234.567-8" maxlength="20" />
-              </label>
-              <label class="campo">
-                <span>Correo para solicitudes de datos</span>
-                <input type="email" id="f-legal-email" maxlength="120" />
-              </label>
-            </div>
-          </div>
-
-          <!-- TAB 5: ESTUDIO AUDIOVISUAL IA (5 NIVELES CON HUMAN-IN-THE-LOOP) -->
-          <div class="tab-panel oculto" data-panel="audiovisual">
-            <div class="cabecera-bloque">
-              <h2>Pipeline Audiovisual de Agencia (5 Niveles)</h2>
-              <button type="button" id="btn-ia-auditar" class="btn btn--primario">
-                🤖 Auditar con DeepSeek + Generar Niveles 1 a 3
-              </button>
-            </div>
-            <p class="ayuda">
-              Conecta con <code>deepseek_harness</code> (o motor local si el contenedor está en ahorro de RAM) para auditar el copy comercial y estructurar las tomas coherentes de la marca.
-            </p>
-
-            <h3>Nivel 1 · Moodboard y Ritmo</h3>
-            <div class="grid-2">
-              <label class="campo">
-                <span>Estilo visual y atmósfera</span>
-                <input type="text" id="f-av-estilo" maxlength="160" placeholder="Ej: Brasas incandescentes, humo cálido y madera rústica" />
-              </label>
-              <label class="campo">
-                <span>Ritmo de edición</span>
-                <select id="f-av-ritmo">
-                  <option value="fast-pacing">Fast Pacing (TikTok / Reels impacto rápido)</option>
-                  <option value="cinematic-slow">Cinematic Slow (Detalle gourmet 120fps)</option>
-                  <option value="dynamic-commercial">Dynamic Commercial (Meta Ads conversión)</option>
-                </select>
-              </label>
-            </div>
-
-            <h3>Nivel 2 · Ficha Técnica Visual Única (Consistencia de Marca)</h3>
-            <label class="campo">
-              <span>Sujeto / Producto principal *</span>
-              <input type="text" id="f-av-sujeto" maxlength="140" placeholder="Ej: Punta de Anca 400g sobre parrilla de hierro con brasas" />
-            </label>
-            <div class="grid-3">
-              <label class="campo">
-                <span>Vista Frontal (Prompt técnico)</span>
-                <textarea id="f-av-frontal" rows="3" maxlength="300"></textarea>
-              </label>
-              <label class="campo">
-                <span>Vista Lateral (Prompt técnico)</span>
-                <textarea id="f-av-lateral" rows="3" maxlength="300"></textarea>
-              </label>
-              <label class="campo">
-                <span>Detalles / Textura Macro</span>
-                <textarea id="f-av-macro" rows="3" maxlength="300"></textarea>
-              </label>
-            </div>
-
-            <h3>Nivel 3 · Construcción de 4 Tomas Coherentes (Hero, Nosotros, Servicios, Detalle)</h3>
-            <div id="lista-tomas-av" class="lista-editable"></div>
-
-            <hr class="divisor" />
-
-            <div class="cabecera-bloque">
-              <h3>Nivel 4 · Dirección Cinematográfica</h3>
-              <button type="button" id="btn-ia-cine" class="btn btn--secundario">
-                🎥 Traducir idea a Prompt de Cámara + Generar Borrador (Paso 1)
-              </button>
-            </div>
-            <div class="grid-2">
-              <label class="campo">
-                <span>Idea simple del operador</span>
-                <input type="text" id="f-av-idea" maxlength="300" placeholder="Ej: Mostrar cómo cae la carne a la parrilla caliente y sale fuego" />
-              </label>
-              <label class="campo">
-                <span>Formato de salida</span>
-                <select id="f-av-formato">
-                  <option value="reel-9x16">Vertical 9:16 (TikTok / Reels / Shorts)</option>
-                  <option value="hero-16x9">Horizontal 16:9 (Hero Web)</option>
-                  <option value="post-1x1">Cuadrado 1:1 (Feed / Carrusel)</option>
-                </select>
-              </label>
-            </div>
-            <label class="campo">
-              <span>Prompt técnico de cámara y lente (Generado por Nivel 4)</span>
-              <textarea id="f-av-camara" rows="2" maxlength="600"></textarea>
-            </label>
-            <div class="grid-2">
-              <label class="campo">
-                <span>Iluminación y física</span>
-                <input type="text" id="f-av-luz" maxlength="300" />
-              </label>
-              <label class="campo">
-                <span>Movimiento de lente</span>
-                <input type="text" id="f-av-mov" maxlength="200" />
-              </label>
-            </div>
-
-            <hr class="divisor" />
-
-            <h3>Nivel 5 · Animación en 2 Pasos (Ahorro de Créditos · Human-in-the-Loop)</h3>
-            <div class="fila-item" style="justify-content:space-between;flex-wrap:wrap">
+            <header class="panel-header">
               <div>
-                <strong>Estado del pipeline: </strong>
-                <span id="av-estado-badge" class="pill">sin_iniciar</span>
-                <small id="av-aprobacion-info" style="display:block;color:var(--muted);margin-top:4px"></small>
+                <span class="eyebrow">MÓDULO 04 · PRUEBA SOCIAL Y CUMPLIMIENTO</span>
+                <h2>Opiniones, Metadatos SEO y Habeas Data</h2>
               </div>
-              <button type="button" id="btn-ia-aprobar" class="btn btn--primario">
-                ✅ Aprobar Borrador (Human-in-the-Loop) y Autorizar Render 1080p
-              </button>
+            </header>
+
+            <div class="bento-card">
+              <div class="cabecera-bloque">
+                <h3>Reseñas y Testimonios</h3>
+                <button type="button" id="btn-add-testimonio" class="btn btn--pequeno">+ Añadir reseña</button>
+              </div>
+              <div id="lista-testimonios" class="lista-editable"></div>
             </div>
-            <label class="campo" style="margin-top:0.8rem">
-              <span>Diseño sonoro sugerido (SFX + Música)</span>
-              <input type="text" id="f-av-sfx" maxlength="240" />
-            </label>
+
+            <div class="bento-card">
+              <h3>Optimización en Buscadores (Google &amp; Open Graph)</h3>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Título SEO (&lt;title&gt;, máx. 70 chars)</span>
+                  <input type="text" id="f-seo-titulo" maxlength="70" />
+                </label>
+                <label class="campo">
+                  <span>Meta Descripción (máx. 160 chars)</span>
+                  <input type="text" id="f-seo-desc" maxlength="160" />
+                </label>
+              </div>
+            </div>
+
+            <div class="bento-card">
+              <h3>Cumplimiento Ley 1581 de 2012 (Colombia)</h3>
+              <p class="ayuda">Genera automáticamente la página legal <code>/privacidad/</code> libre de cookies de rastreo.</p>
+              <div class="grid-3">
+                <label class="campo">
+                  <span>Razón social responsable</span>
+                  <input type="text" id="f-legal-resp" maxlength="120" />
+                </label>
+                <label class="campo">
+                  <span>NIT empresarial</span>
+                  <input type="text" id="f-nit" placeholder="901.234.567-8" maxlength="20" />
+                </label>
+                <label class="campo">
+                  <span>Email oficial Habeas Data</span>
+                  <input type="email" id="f-legal-email" maxlength="120" />
+                </label>
+              </div>
+            </div>
           </div>
 
-          <!-- TAB 6: AUDITOR WEB INTEGRAL, ESTRATEGIA Y CRO (4 PILARES) + QDRANT -->
+          <!-- TAB 5: ESTUDIO AUDIOVISUAL IA (5 NIVELES) -->
+          <div class="tab-panel oculto" data-panel="audiovisual">
+            <header class="panel-header">
+              <div>
+                <span class="eyebrow">MÓDULO 05 · AGENCIA CREATIVA AUTOMATIZADA</span>
+                <h2>Pipeline Audiovisual IA en 5 Niveles</h2>
+              </div>
+              <button type="button" id="btn-ia-auditar" class="btn btn--primario">
+                <span>✨ Generar Niveles 1–3 con IA</span>
+              </button>
+            </header>
+
+            <div class="bento-card">
+              <h3>Nivel 1 · Moodboard y Ritmo Narrativo</h3>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Dirección de atmósfera visual</span>
+                  <input type="text" id="f-av-estilo" maxlength="160" placeholder="Ej: Iluminación cálida lateral, brasas vivas y texturas artesanales" />
+                </label>
+                <label class="campo">
+                  <span>Cadencia de edición</span>
+                  <select id="f-av-ritmo">
+                    <option value="fast-pacing">Fast Pacing (Reels / TikTok retención alta)</option>
+                    <option value="cinematic-slow">Cinematic Slow (Detalle 120fps)</option>
+                    <option value="dynamic-commercial">Dynamic Commercial (Meta Ads conversión)</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="bento-card">
+              <h3>Nivel 2 · Ficha Técnica de Consistencia de Marca</h3>
+              <label class="campo">
+                <span>Sujeto o producto héroe *</span>
+                <input type="text" id="f-av-sujeto" maxlength="140" />
+              </label>
+              <div class="grid-3">
+                <label class="campo">
+                  <span>Plano Frontal</span>
+                  <textarea id="f-av-frontal" rows="3" maxlength="300"></textarea>
+                </label>
+                <label class="campo">
+                  <span>Plano Lateral</span>
+                  <textarea id="f-av-lateral" rows="3" maxlength="300"></textarea>
+                </label>
+                <label class="campo">
+                  <span>Macro / Textura</span>
+                  <textarea id="f-av-macro" rows="3" maxlength="300"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div class="bento-card">
+              <h3>Nivel 3 · Storyboard de 4 Tomas para el Sitio</h3>
+              <div id="lista-tomas-av" class="lista-editable"></div>
+            </div>
+
+            <div class="bento-card">
+              <div class="cabecera-bloque">
+                <div>
+                  <h3>Nivel 4 · Dirección Cinematográfica</h3>
+                  <p class="ayuda">Traduce tu idea en lenguaje de óptica, física de luz y movimiento de cámara.</p>
+                </div>
+                <button type="button" id="btn-ia-cine" class="btn btn--vidrio">
+                  🎥 Traducir y Crear Borrador
+                </button>
+              </div>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Idea creativa del operador</span>
+                  <input type="text" id="f-av-idea" maxlength="300" placeholder="Ej: Corte jugoso cayendo a la parrilla con chispas en cámara lenta" />
+                </label>
+                <label class="campo">
+                  <span>Relación de aspecto</span>
+                  <select id="f-av-formato">
+                    <option value="reel-9x16">9:16 Vertical (Reels / TikTok)</option>
+                    <option value="hero-16x9">16:9 Horizontal (Hero Web)</option>
+                    <option value="post-1x1">1:1 Cuadrado (Feed)</option>
+                  </select>
+                </label>
+              </div>
+              <label class="campo">
+                <span>Prompt óptico de cámara</span>
+                <textarea id="f-av-camara" rows="2" maxlength="600"></textarea>
+              </label>
+              <div class="grid-2">
+                <label class="campo">
+                  <span>Esquema de iluminación física</span>
+                  <input type="text" id="f-av-luz" maxlength="300" />
+                </label>
+                <label class="campo">
+                  <span>Movimiento de lente / rig</span>
+                  <input type="text" id="f-av-mov" maxlength="200" />
+                </label>
+              </div>
+            </div>
+
+            <div class="bento-card bento-card--destacada">
+              <div class="cabecera-bloque">
+                <div>
+                  <h3>Nivel 5 · Compuerta Human-in-the-Loop (Render 1080p)</h3>
+                  <small id="av-aprobacion-info" class="ayuda" style="display:block;margin-top:4px"></small>
+                </div>
+                <span id="av-estado-badge" class="pill">sin_iniciar</span>
+              </div>
+              <label class="campo" style="margin-top:0.7rem">
+                <span>Diseño sonoro sugerido (Foley SFX + Música)</span>
+                <input type="text" id="f-av-sfx" maxlength="240" />
+              </label>
+              <button type="button" id="btn-ia-aprobar" class="btn btn--primario" style="margin-top:0.4rem">
+                ✅ Aprobar Borrador y Disparar Render Final 1080p
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 6: AUDITOR WEB INTEGRAL & CRO (4 PILARES) + QDRANT -->
           <div class="tab-panel oculto" data-panel="auditor">
-            <div class="cabecera-bloque">
-              <h2>Auditoría Web Integral &amp; CRO (4 Pilares)</h2>
-              <button type="button" id="btn-qdrant-sync" class="btn btn--pequeno">
-                🧠 Sincronizar Catálogo en Qdrant (:6333)
+            <header class="panel-header">
+              <div>
+                <span class="eyebrow">MÓDULO 06 · CONSULTORÍA AUTOMATIZADA + VECTOR DB</span>
+                <h2>Auditoría Web 4 Pilares &amp; Conversor Inteligente</h2>
+              </div>
+              <button type="button" id="btn-qdrant-sync" class="btn btn--vidrio">
+                🧠 Sincronizar Qdrant (:6333)
               </button>
-            </div>
-            <p class="ayuda">
-              Ingresa cualquier URL pública para diagnosticar <strong>1. SEO</strong>, <strong>2. WPO (Core Web Vitals)</strong>,
-              <strong>3. Competencia y DAFO</strong> y <strong>4. Tráfico/CRO</strong>, con recomendación vectorial en Qdrant y creación directa de sitio mejorado.
-            </p>
+            </header>
 
-            <div class="grid-2">
-              <label class="campo">
-                <span>URL del sitio web a auditar *</span>
-                <input type="url" id="audit-url" placeholder="https://revisarauditores.com.co/" />
-              </label>
-              <label class="campo">
-                <span>Contexto opcional (competidores o giro del negocio)</span>
-                <input type="text" id="audit-contexto" maxlength="200" placeholder="Ej: Firma de revisoría fiscal y auditoría en Colombia" />
-              </label>
-            </div>
+            <div class="bento-card">
+              <div class="grid-2">
+                <label class="campo">
+                  <span>URL pública del cliente o prospecto *</span>
+                  <input type="url" id="audit-url" placeholder="https://revisarauditores.com.co/" />
+                </label>
+                <label class="campo">
+                  <span>Giro de negocio o competidores (opcional)</span>
+                  <input type="text" id="audit-contexto" maxlength="200" placeholder="Ej: Firma de revisoría fiscal y auditoría en Colombia" />
+                </label>
+              </div>
 
-            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem">
-              <button type="button" id="btn-ejecutar-auditoria" class="btn btn--primario">
-                🔍 Diagnosticar URL (4 Pilares)
-              </button>
-              <button type="button" id="btn-audit-crear-sitio" class="btn btn--secundario oculto">
-                ⚡ Crear Sitio Mejorado en Forja con estos Datos
-              </button>
-              <button type="button" id="btn-audit-copiar-md" class="btn btn--pequeno oculto">
-                📋 Copiar Informe Markdown
-              </button>
+              <div class="acciones-auditor">
+                <button type="button" id="btn-ejecutar-auditoria" class="btn btn--primario">
+                  🔍 Ejecutar Diagnóstico (SEO · WPO · DAFO · CRO)
+                </button>
+                <button type="button" id="btn-audit-crear-sitio" class="btn btn--vidrio oculto">
+                  ⚡ Transformar en Sitio Mejorado Forja
+                </button>
+                <button type="button" id="btn-audit-copiar-md" class="btn btn--pequeno oculto">
+                  📋 Copiar Informe Markdown
+                </button>
+              </div>
             </div>
 
             <div id="audit-resultado" class="audit-contenedor"></div>
@@ -410,64 +575,83 @@
         </form>
       </section>
 
-      <!-- Panel derecho: Vista previa interactiva -->
-      <section class="preview" aria-label="Vista previa del sitio">
-        <div class="preview__barra">
-          <div class="preview__modos">
-            <button type="button" class="btn btn--pequeno modo-activo" data-viewport="desktop">🖥️ Escritorio</button>
-            <button type="button" class="btn btn--pequeno" data-viewport="mobile">📱 Celular</button>
+      <!-- 3. Escenario interactivo (Simulador de navegador / móvil) -->
+      <section class="preview" aria-label="Vista previa en tiempo real">
+        <div class="preview__toolbar">
+          <div class="segmented-control" role="group" aria-label="Dispositivo de vista previa">
+            <button type="button" class="seg-btn modo-activo" data-viewport="desktop">Escritorio</button>
+            <button type="button" class="seg-btn" data-viewport="mobile">Celular</button>
           </div>
-          <code id="preview-url-texto" class="preview__url">/demo-restaurante/</code>
+
+          <div class="browser-omnibox">
+            <span class="omnibox-lock" aria-hidden="true">●</span>
+            <code id="preview-url-texto">/demo-restaurante/</code>
+          </div>
+
           <a id="preview-abrir" href="/demo-restaurante/" target="_blank" rel="noopener noreferrer" class="btn btn--pequeno">
-            Abrir en pestaña ↗
+            Abrir pestaña ↗
           </a>
         </div>
-        <div class="preview__contenedor" id="preview-contenedor">
-          <iframe id="preview-iframe" title="Vista previa del sitio generado"></iframe>
+
+        <div class="preview__stage" id="preview-contenedor">
+          <div class="device-frame">
+            <div class="device-chrome" aria-hidden="true">
+              <span class="dot dot--r"></span>
+              <span class="dot dot--y"></span>
+              <span class="dot dot--g"></span>
+              <div class="device-notch"></div>
+            </div>
+            <iframe id="preview-iframe" title="Vista previa del sitio generado"></iframe>
+          </div>
         </div>
       </section>
     </div>
 
+    <!-- Contenedor de notificaciones Toast modernas -->
+    <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+
     <!-- Modal: Crear nuevo negocio -->
     <dialog id="modal-nuevo" class="modal">
       <form id="form-nuevo" method="dialog">
-        <h2>Crear nuevo sitio de negocio</h2>
+        <span class="eyebrow">NUEVO ESPACIO DE TRABAJO</span>
+        <h2>Crear sitio para un cliente</h2>
         <label class="campo">
-          <span>Nombre del negocio *</span>
+          <span>Nombre comercial *</span>
           <input type="text" id="nuevo-nombre" placeholder="Ej: Panadería La Espiga" maxlength="80" required />
         </label>
         <label class="campo">
-          <span>Identificador (slug, solo minúsculas y guiones) *</span>
+          <span>Identificador único (slug) *</span>
           <input type="text" id="nuevo-slug" placeholder="panaderia-la-espiga" pattern="^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$" required />
         </label>
         <div class="grid-2">
           <label class="campo">
-            <span>Plantilla</span>
+            <span>Plantilla base</span>
             <select id="nuevo-plantilla"></select>
           </label>
           <label class="campo">
-            <span>Tema inicial</span>
+            <span>Tema y escena 3D</span>
             <select id="nuevo-tema"></select>
           </label>
         </div>
         <div class="modal__acciones">
-          <button type="button" id="btn-cancelar-nuevo" class="btn btn--secundario">Cancelar</button>
-          <button type="submit" class="btn btn--primario">Crear y abrir en Studio</button>
+          <button type="button" id="btn-cancelar-nuevo" class="btn btn--vidrio">Cancelar</button>
+          <button type="submit" class="btn btn--primario">Crear proyecto</button>
         </div>
       </form>
     </dialog>
 
-    <!-- Modal: Autenticación STUDIO_TOKEN (solo aparece si el servidor tiene STUDIO_TOKEN activo) -->
+    <!-- Modal: Autenticación STUDIO_TOKEN -->
     <dialog id="modal-login" class="modal">
       <form id="form-login" method="dialog">
-        <h2>🔒 Acceso a Forja Studio</h2>
-        <p class="ayuda">Este servidor está protegido con <code>STUDIO_TOKEN</code>.</p>
+        <span class="eyebrow">SEGURIDAD FORJA</span>
+        <h2>Desbloquear Studio</h2>
+        <p class="ayuda">Ingresa el <code>STUDIO_TOKEN</code> configurado en tu servidor Proxmox.</p>
         <label class="campo">
-          <span>Clave de administrador</span>
+          <span>Clave de acceso</span>
           <input type="password" id="login-token" required />
         </label>
         <div class="modal__acciones">
-          <button type="submit" class="btn btn--primario">Entrar</button>
+          <button type="submit" class="btn btn--primario">Iniciar sesión</button>
         </div>
       </form>
     </dialog>

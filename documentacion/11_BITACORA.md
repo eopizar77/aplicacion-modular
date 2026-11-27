@@ -132,6 +132,11 @@ Registro auditable con fecha y hora (`America/Bogota`, UTC-5) de todas las decis
   - Puntaje actual detectado: **43/100 (Estado: Crítico)** — WordPress + Divi + jQuery (`83.9 KB` HTML, `0` etiquetas `<h1>`, `0` `<meta name="description">`, `14/15` imágenes sin `alt`, `20` scripts, sin WhatsApp directo).
   - Sitio modernizado generado y compilado en [sites/revisarauditores-v2/site.json](file:///d:/piza77/proyectos/APLICACION__MODULAR/sites/revisarauditores-v2/site.json) e informe completo guardado en [documentacion/14_AUDITORIA_REVISAR_AUDITORES.md](file:///d:/piza77/proyectos/APLICACION__MODULAR/documentacion/14_AUDITORIA_REVISAR_AUDITORES.md).
 
+### `[2026-11-26 18:59:03 - 19:19:30 -05:00]` · Corrección de Permisos Docker (`UID 1000`) y Rediseño Moderno "Forja Studio 2.0"
+- **Infraestructura Docker:** Se corrigió `--chown=1000:1000` sobre el volumen compartido (`forja_publicados`), se añadió sincronización automática de semillas `/app/.seed` en el arranque de `forja-studio` y captura completa de `stderr` en `ejecutar()` de [generator/src/generate.mjs](file:///d:/piza77/proyectos/APLICACION__MODULAR/generator/src/generate.mjs).
+- **Rediseño UI Forja Studio 2.0:** Se renovaron [studio/public/index.html](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/index.html), [studio/public/styles.css](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/styles.css) y [studio/public/app.js](file:///d:/piza77/proyectos/APLICACION__MODULAR/studio/public/app.js) con arquitectura de 3 columnas (*Dark Glassmorphism* + riel lateral con iconos SVG + tarjetas *Bento* + simulador de navegador/smartphone con *Dynamic Island* y notificaciones *Toast*), manteniendo cero dependencias externas y CSP estricta.
+
+
 
 
 

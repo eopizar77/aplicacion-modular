@@ -28,6 +28,17 @@ function notificar(texto, tipo = '') {
   const pill = $('#estado-pill');
   pill.textContent = texto;
   pill.className = `pill ${tipo ? 'pill--' + tipo : ''}`;
+  if (tipo === 'ok' || tipo === 'err') mostrarToast(texto, tipo);
+}
+
+function mostrarToast(mensaje, tipo = 'ok') {
+  const stack = $('#toast-stack');
+  if (!stack) return;
+  const el = document.createElement('div');
+  el.className = `toast toast--${tipo}`;
+  el.textContent = mensaje;
+  stack.appendChild(el);
+  setTimeout(() => el.remove(), tipo === 'err' ? 5500 : 3200);
 }
 
 async function api(ruta, opciones = {}) {
@@ -113,7 +124,7 @@ function actualizarIframe(previewUrl, compilado = true) {
   if (compilado) {
     iframe.src = `${previewUrl}?t=${Date.now()}`;
   } else {
-    iframe.srcdoc = `<body style="font-family:system-ui;background:#0d1117;color:#e6edf3;display:grid;place-items:center;height:90vh;text-align:center"><div><h2>Sitio aún no ensamblado</h2><p>Haz clic en <strong>⚡ Guardar y Ensamblar 3D</strong> arriba a la derecha para generar la vista previa.</p></div></body>`;
+    iframe.srcdoc = `<body style="margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 50% 20%,#1a2234,#07090e 70%);color:#f3f6fc;display:grid;place-items:center;height:100vh;text-align:center;padding:2rem"><div style="max-width:360px;background:rgba(22,27,38,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem"><div style="font-size:2rem;margin-bottom:0.6rem">⚡</div><h2 style="margin:0 0 0.5rem;font-size:1.15rem">Listo para ensamblar en 3D</h2><p style="margin:0;color:#8b96ab;font-size:0.88rem;line-height:1.5">Pulsa <strong style="color:#ff7b29">Guardar y Ensamblar 3D</strong> en la esquina superior derecha para compilar la vista previa interactiva.</p></div></body>`;
   }
 }
 
