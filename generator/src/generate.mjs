@@ -223,11 +223,25 @@ function binAstro(dirPlantilla) {
 function ejecutar(args, opciones) {
   return new Promise((resolve, reject) => {
     // Sin shell: los argumentos nunca se interpretan como comandos.
-    const p = spawn(process.execPath, args, { stdio: 'inherit', ...opciones });
+    // Capturamos stderr/stdout para mostrar la causa exacta si Astro falla en un contenedor.
+    const p = spawn(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'], ...opciones });
+    let logSalida = '';
+    p.stdout.on('data', (d) => {
+      logSalida += d.toString();
+    });
+    p.stderr.on('data', (d) => {
+      const txt = d.toString();
+      logSalida += txt;
+      process.stderr.write(txt);
+    });
     p.on('error', reject);
-    p.on('exit', (code) =>
-      code === 0 ? resolve() : reject(new ErrorForja(`Astro terminó con código ${code}`)),
-    );
+    p.on('exit', (code) => {
+      if (code === 0) resolve();
+      else {
+        const detalle = logSalida.trim().split('\n').slice(-8).join('\n');
+        reject(new ErrorForja(`Astro terminó con código ${code}${detalle ? `:\n${detalle}` : ''}`));
+      }
+    });
   });
 }
 
@@ -248,7 +262,7 @@ export async function construirSitio(slug) {
   const salida = path.join(RUTAS.salida, slug);
   if (!dentroDe(RUTAS.salida, salida)) throw new ErrorForja('Ruta de salida inválida');
   await fsp.rm(salida, { recursive: true, force: true });
-  await ejecutar([binAstro(prep.plantilla.dirAbs), 'build', '--silent'], {
+  await ejecutar([binAstro(prep.plantilla.dirAbs), 'build'], {
     cwd: prep.plantilla.dirAbs,
     env: {
       ...process.env,

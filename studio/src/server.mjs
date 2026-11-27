@@ -477,6 +477,27 @@ export function crearServidorStudio() {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  // Si corremos en Docker con volúmenes ya creados, sincroniza sitios nuevos de /app/.seed que falten
+  const dirSeed = path.resolve(DIR_STUDIO, '..', '.seed');
+  if (fs.existsSync(dirSeed)) {
+    const poblarFaltantes = (origenBase, destinoBase) => {
+      if (!fs.existsSync(origenBase)) return;
+      fs.mkdirSync(destinoBase, { recursive: true });
+      for (const d of fs.readdirSync(origenBase, { withFileTypes: true })) {
+        const dest = path.join(destinoBase, d.name);
+        if (!fs.existsSync(dest)) {
+          fs.cpSync(path.join(origenBase, d.name), dest, { recursive: true });
+        }
+      }
+    };
+    try {
+      poblarFaltantes(path.join(dirSeed, 'sites'), RUTAS.sitios);
+      poblarFaltantes(path.join(dirSeed, 'dist-sites'), RUTAS.salida);
+    } catch (err) {
+      console.warn('[forja-studio] Aviso al sincronizar semillas:', err.message);
+    }
+  }
+
   const srv = crearServidorStudio();
   srv.listen(PORT, HOST, () => {
     console.log(`\n⚒️  Forja Studio activo en http://${HOST}:${PORT}`);

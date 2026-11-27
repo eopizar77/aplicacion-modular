@@ -26,11 +26,16 @@ RUN node generator/bin/forja.mjs validate --all \
  && node generator/bin/forja.mjs build --all
 
 # ----------------------------------------------------------------------------
-# Target: studio (Panel visual Forja Studio — Fase 3, ejecuta como usuario no-root "node")
+# Target: studio (Panel visual Forja Studio — Fase 3, ejecuta como usuario no-root "node" UID 1000)
 FROM build AS studio
 ENV STUDIO_HOST=0.0.0.0 \
-    STUDIO_PORT=4322
-RUN chown -R node:node /app
+    STUDIO_PORT=4322 \
+    NODE_OPTIONS="--max-old-space-size=768"
+# Guardamos copia semilla de los sitios de la imagen para poblar volúmenes persistentes existentes
+RUN mkdir -p /app/.seed \
+ && cp -r /app/sites /app/.seed/sites \
+ && cp -r /app/dist-sites /app/.seed/dist-sites \
+ && chown -R node:node /app
 USER node
 EXPOSE 4322
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
@@ -46,7 +51,8 @@ LABEL org.opencontainers.image.title="forja-sitios" \
 
 COPY deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY deploy/nginx/seguridad.conf /etc/nginx/snippets/seguridad.conf
-COPY --from=build /app/dist-sites /usr/share/nginx/html/sites
+# UID 1000 (node) propietario para escritura desde forja-studio y lectura pública (755/644) para Nginx (UID 101)
+COPY --from=build --chown=1000:1000 /app/dist-sites /usr/share/nginx/html/sites
 
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

@@ -18,7 +18,7 @@ services:
     ports:
       - "${WEB_PORT:-19085}:8080"
     volumes:
-      - forja_dist:/usr/share/nginx/html/sites:ro
+      - forja_publicados:/usr/share/nginx/html/sites:ro
     # Endurecimiento del contenedor (compatible con nginxinc/nginx-unprivileged en modo read_only)
     read_only: true
     tmpfs:
@@ -64,7 +64,10 @@ services:
       - DEEPSEEK_HARNESS_URL=${DEEPSEEK_HARNESS_URL:-http://192.168.20.52:3090}
     volumes:
       - forja_sites:/app/sites
-      - forja_dist:/app/dist-sites
+      - forja_publicados:/app/dist-sites
+    tmpfs:
+      - /app/.forja:rw,noexec,nosuid,size=128m
+      - /tmp:rw,noexec,nosuid,size=64m
     cap_drop:
       - ALL
     security_opt:
@@ -73,7 +76,7 @@ services:
       resources:
         limits:
           cpus: "1.5"
-          memory: 768M
+          memory: 1024M
     logging:
       driver: json-file
       options:
@@ -96,5 +99,5 @@ services:
 
 volumes:
   forja_sites:
-  forja_dist:
+  forja_publicados:
 
